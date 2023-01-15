@@ -631,7 +631,7 @@ class Query
         end
         tmp_query = Query.new.(jq)
         alias_query = j[:alias] || jq
-        ori, al = with_alias(j[:alias], tmp_query, with_name: j[:name] || jq, is_materialized: j[:materialized] || false)
+        ori, al = with_alias(j[:alias], tmp_query, with_name: j[:cte] || jq, is_materialized: j[:materialized] || false)
 
         tmp_cond = lit("true") if j[:where] and true?(j[:where])
         tmp_cond = Predicate.new(ori).(j[:where]) if !tmp_cond and j[:where] #: lit("true")

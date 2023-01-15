@@ -66,8 +66,7 @@ block2 {
           value: FR
       alias: codes (code, name)
     alias: countries
-    name: countries (code, name)
-    cte: true
+    cte: countries (code, name)
     type: left_join
     on:
     - left: countries.code

@@ -12,8 +12,7 @@ main:
           value: {{ params.fr }}
       alias: codes (code, name)
     alias: countries
-    name: countries (code, name)
-    cte: true
+    cte: countries (code, name)
     type: left_join
     on:
     - left: countries.code
