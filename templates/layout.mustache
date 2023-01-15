@@ -36,6 +36,13 @@ li {
   clear: both;
 }
 </style>
+<script>
+var code = document.querySelector('#sql_code');
+
+var format = window.sqlFormatter.format;
+code.innerText = format(code.innerHTML);
+
+    </script>
   </head>
   <body>
   <h1>{{title}}</h1>
