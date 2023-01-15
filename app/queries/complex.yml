@@ -1,3 +1,4 @@
+---
 main:
   from: salary_increase
   alias: ix

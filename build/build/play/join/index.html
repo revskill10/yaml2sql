@@ -62,7 +62,8 @@ li {
   <div class="column" style="background-color:#aaa;font-size: 18px;">
     <h2>YAML</h2>
     <pre contenteditable class="language-yaml" data-linenumber="0">
-    get_orders_query: &amp;get_orders_query
+    ---
+get_orders_query: &amp;get_orders_query
   select:
   - field: client_id
   - operator: sum
@@ -103,7 +104,9 @@ li {
         value: sales
   from: orders
   group_by:
-  - field: client_id  select:
+  - field: client_id
+main:
+  select:
   - clients.*
   - o.total_sales
   - o.total_refunds

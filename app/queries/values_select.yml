@@ -1,3 +1,4 @@
+---
 main:
   from: data
   distinct_on:

@@ -1,3 +1,4 @@
+---
 get_orders_query: &get_orders_query
   select:
   - field: client_id
