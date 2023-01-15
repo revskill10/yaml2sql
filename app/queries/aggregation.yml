@@ -1,0 +1,18 @@
+main:
+  select:
+  - department_name
+  - operator: min
+    alias: min_salary
+    args:
+    - salary
+  from: employees
+  join:
+  - from: departments
+    type: inner_join
+    on:
+    - operator: =
+      left: department_name
+      right: "test"
+  group:
+  - department_name
+  

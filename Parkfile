@@ -1,0 +1,18 @@
+$:.unshift(__FILE__, ".")
+require "parklife"
+require "app/app"
+
+Parklife.application.configure do |config|
+  config.build_dir = "build"
+  config.rack_app = App
+end
+
+Parklife.application.routes do
+  root
+
+  %w(complex aggregation).each do |name|
+    get "/play/#{name}"
+  end
+  get "/"
+  get "/docs"
+end

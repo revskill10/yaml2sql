@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      {{title}}
+    </title>
+<script src="https://unpkg.com/sql-formatter@2.3.3/dist/sql-formatter.min.js"></script>
+
+<style>
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  display: inline;
+}
+code {
+  display: block;  
+  white-space: pre-wrap   
+}
+.block {
+    float: left;
+    width: 45%;
+    height: 400px;
+}
+block2 {
+    width: 40%;
+    height: 400px;
+}
+</style>
+  </head>
+  <body>
+  <h1>{{title}}</h1>
+    <div id="main" style="margin: 20px;">
+      {{{yield}}}
+    </div>
+    <script>
+var code = document.querySelector('#sql_code');
+
+var format = window.sqlFormatter.format;
+code.innerText = format(code.innerHTML);
+
+    </script>
+  </body>
+</html>

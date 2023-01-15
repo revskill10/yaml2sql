@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      YAML -&gt; SQL
+    </title>
+<script src="https://unpkg.com/sql-formatter@2.3.3/dist/sql-formatter.min.js"></script>
+
+<style>
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  display: inline;
+}
+code {
+  display: block;  
+  white-space: pre-wrap   
+}
+.block {
+    float: left;
+    width: 45%;
+    height: 400px;
+}
+block2 {
+    width: 40%;
+    height: 400px;
+}
+</style>
+  </head>
+  <body>
+  <h1>YAML -&gt; SQL</h1>
+    <div id="main" style="margin: 20px;">
+      <ul>
+  <li>
+    <a href="/">Values select</a>
+  </li>
+  <li>
+    <a href="/play/complex">Complex</a>
+  </li>
+  <li>
+    <a href="/play/aggregation">Aggregation</a>
+  </li>
+  <li>
+    <a href="/docs">Docs</a>
+  </li>
+</ul>
+<a _target="blank" href="https://stackoverflow.com/questions/60530599/how-to-express-sql-queries-in-yaml-format"><small>Why?.</small></a>
+
+<h2>Hello world</h2>
+
+<p>Good</p>
+
+    </div>
+    <script>
+var code = document.querySelector('#sql_code');
+
+var format = window.sqlFormatter.format;
+code.innerText = format(code.innerHTML);
+
+    </script>
+  </body>
+</html>

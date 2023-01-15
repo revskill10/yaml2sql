@@ -1,0 +1,15 @@
+main:
+  from: salary_increase
+  alias: ix
+  select:
+  - e.emp_id
+  - e.inc_date
+  - t.TotalInc
+  - t.MaxIncAmount
+  join:
+  - from: emp_table
+    alias: e
+    on:
+    - operator: =
+      left: i.emp_id
+      right: e.emp_id
