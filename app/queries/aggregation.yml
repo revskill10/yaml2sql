@@ -1,7 +1,7 @@
 ---
 main:
   select:
-  - department_name
+  - field: department_name
   - operator: min
     alias: min_salary
     args:
