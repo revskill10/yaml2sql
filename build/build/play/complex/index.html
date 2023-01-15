@@ -16,24 +16,30 @@ ul {
 li {
   display: inline;
 }
-code {
-  display: block;  
-  white-space: pre-wrap   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
 }
-.block {
-    float: left;
-    width: 45%;
-    height: 400px;
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 45%;
+  padding: 10px;
 }
-block2 {
-    width: 40%;
-    height: 400px;
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 </style>
   </head>
   <body>
   <h1>YAML -&gt; SQL</h1>
-    <div id="main" style="margin: 20px;">
+    <div id="main">
       <ul>
   <li>
     <a href="/">Values select</a>
@@ -45,13 +51,17 @@ block2 {
     <a href="/play/aggregation">Aggregation</a>
   </li>
   <li>
+    <a href="/play/join">Join</a>
+  </li>
+  <li>
     <a href="/docs">Docs</a>
   </li>
 </ul>
 <a _target="blank" href="https://stackoverflow.com/questions/60530599/how-to-express-sql-queries-in-yaml-format"><small>Why?.</small></a>
-<div class="block" style="margin-left: 10%; font-size: 15px;">
-<h2>Yaml</h2>
-<pre contenteditable class="language-yaml" data-linenumber="0" style="padding: 5px;">
+<div class="row">
+  <div class="column" style="background-color:#aaa;font-size: 18px;">
+    <h2>YAML</h2>
+    <pre contenteditable class="language-yaml" data-linenumber="0">
     
   from: salary_increase
   alias: ix
@@ -69,22 +79,24 @@ block2 {
       right: e.emp_id
 
 </pre>
-</div>
-<div class="block2" style="margin-right: 10%; font-size: 15px;">
-<h2>SQL</h2>
-<code class="language-sql line-numbers" style="padding: 5px;" id="sql_code">
+  </div>
+  <div class="column" style="background-color:#bbb;font-size: 18px;">
+    <h2>SQL</h2>
+    <code class="language-sql line-numbers" id="sql_code">
 SELECT e.emp_id, e.inc_date, t.TotalInc, t.MaxIncAmount FROM &quot;salary_increase&quot; &quot;ix&quot; JOIN &quot;emp_table&quot; &quot;e&quot; ON i.emp_id = e.emp_id
 </code>
+  </div>
 </div>
-
-
-    </div>
-    <script>
+<script>
 var code = document.querySelector('#sql_code');
 
 var format = window.sqlFormatter.format;
 code.innerText = format(code.innerHTML);
 
     </script>
+
+
+    </div>
+    
   </body>
 </html>

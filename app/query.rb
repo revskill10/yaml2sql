@@ -96,18 +96,21 @@ end
 module ValueParser
   def get_col(d)
     return nil unless d
+
     if !d.is_a?(Hash) and !d.is_a?(Array)
       return Arel.sql(sanitize(d.to_s))
     end
+    is_operator = d[:operator]
     #return Arel.sql(sanitize(d[:field].to_s)) if d[:field]
-    if d[:field]
-      tt = Arel.sql(sanitize(d[:field].to_s))
+    field = d[:field]
+    if field and !is_operator
+      tt = Arel.sql(sanitize(field.to_s))
       if d[:as]
         tt = cast(tt, sanitize(d[:as]))
       end
       return tt
     end
-    if d[:value]
+    if d[:value] and !is_operator
       tt = sanitize(d[:value].to_s)
       if d[:as]
         tt = Arel.sql("'#{tt}'::#{sanitize(d[:as])}")
@@ -118,15 +121,15 @@ module ValueParser
     end
     return Query.new.(d[:query]) if d[:query]
 
-    op = d[:operator]
+    op = d[:operator].to_sym
     operation = "visit_#{op}"
     if respond_to?(operation)
       tmp = send "visit_#{op}", d
     else
       tmp = send "visit_external", op, d
     end
-    return get_alias(tmp, d[:alias]) if d[:alias]
-    return tmp
+
+    return get_alias(tmp, d[:alias]) #if d[:alias]
   end
 
   def get_when(args)
@@ -145,15 +148,21 @@ module ValueParser
   end
 
   def visit_aggregator(node, aggop)
-    is_distinct = node[:distinct] ? true : false
+    is_distinct = true?(node[:distinct])
     args = node[:args]
     args = [args] if args.is_a?(Hash)
+
     if is_distinct and args.is_a?(Array)
       tmp = get_col(args[0]).send(aggop, is_distinct)
     else
       tmp = get_col(args[0]).send(aggop)
     end
-    tmp = tmp.filter(@default_predicate.call(node[:filter])) if node[:filter]
+    if node.fetch(:filter).fetch(:where).present?
+      fil = node[:filter][:where]
+      ff = Predicate.new(node[:alias] || :test).(fil)
+      tmp = Arel.sql("#{tmp.to_sql} FILTER(WHERE #{ff.to_sql})")
+    end
+
     return tmp
   end
 
@@ -173,7 +182,7 @@ module ValueParser
     visit_aggregator(node, :maximum)
   end
 
-  def visit_average(node)
+  def visit_avg(node)
     visit_aggregator(node, :average)
   end
 
@@ -201,7 +210,7 @@ class Predicate
   attr_reader :alias
 
   # previous code up here
-  def initialize(arel_table)
+  def initialize(arel_table = nil)
     @collector = (arel_table.is_a?(Symbol) or arel_table.is_a?(String)) ? create_arel(arel_table.to_sym) : arel_table
     @alias = @collector.name if @collector
   end
@@ -223,7 +232,8 @@ class Predicate
     res = Lexer.new.iter(condition)
     new_visitor = Predicate.new(create_arel(@alias))
     new_visitor.visit(res)
-    new_visitor.collector
+    xx = new_visitor.collector
+    xx
   end
 
   def to_query
@@ -429,6 +439,7 @@ class Selector
   end
 
   def get_alias(node, alia = nil)
+    puts "NODE #{node}"
     return node.as(alia) if alia
     node
   end
@@ -477,17 +488,9 @@ class Query
     return cte_table, Arel::Nodes::As.new(cte_table, q)
   end
 
-  def field_transform(field, col)
-    tmp, tmp2 = field.split(".")
-    create_arel(tmp.to_sym)
-    return col[tmp] if !tmp2 || tmp.to_sym == sym
-    [tmp2.to_sym]
-  end
-
   def call(table, to_sql = false)
     if table[:from].is_a?(Symbol)
       arel = create_arel(table[:from], table[:alias])
-      puts "TABLE #{arel.sql}"
     end
 
     sym = table[:from]
@@ -527,6 +530,7 @@ class Query
     query = arel
     sels = table[:select]
     query = @selector.(sels)
+
     if table[:distinct_where] and table[:distinct_where].is_a?(Array)
       colls = table[:distinct_where].map do |d|
         get_col(d)
@@ -620,7 +624,6 @@ class Query
 
           if j[:where]
             tmp_cond = Predicate.new(ori).(j[:where])
-            puts "COND: #{tmp_cond}"
             #ori = ori.as(j[:alias]) if j[:alias]
             query = query.join(ori, get_join_type(j[:type])).on(tmp_cond)
             next
@@ -630,6 +633,7 @@ class Query
           end
         end
         tmp_query = Query.new.(jq)
+
         alias_query = j[:alias] || jq
         ori, al = with_alias(j[:alias], tmp_query, with_name: j[:cte] || jq, is_materialized: j[:materialized] || false)
 
@@ -749,10 +753,12 @@ class QueryRunner
     cc = content.gsub(/on:/, "where:")
     r = Psych.safe_load(cc, aliases: true, symbolize_names: true)
     q = Query.new.(r[:main], true)
+    puts "QUERY: #{q}"
     validate_sql!(q)
     [q, content]
   rescue => e
     puts "EEE: #{e}"
     e.message
+    e.backtrace
   end
 end

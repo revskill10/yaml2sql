@@ -1,14 +1,23 @@
 {{> partial}}
-<div class="block" style="margin-left: 10%; font-size: 15px;">
-<h2>Yaml</h2>
-<pre contenteditable class="language-yaml" data-linenumber="0" style="padding: 5px;">
+<div class="row">
+  <div class="column" style="background-color:#aaa;font-size: 18px;">
+    <h2>YAML</h2>
+    <pre contenteditable class="language-yaml" data-linenumber="0">
     {{yaml_content}}
 </pre>
-</div>
-<div class="block2" style="margin-right: 10%; font-size: 15px;">
-<h2>SQL</h2>
-<code class="language-sql line-numbers" style="padding: 5px;" id="sql_code">
+  </div>
+  <div class="column" style="background-color:#bbb;font-size: 18px;">
+    <h2>SQL</h2>
+    <code class="language-sql line-numbers" id="sql_code">
 {{content}}
 </code>
+  </div>
 </div>
+<script>
+var code = document.querySelector('#sql_code');
+
+var format = window.sqlFormatter.format;
+code.innerText = format(code.innerHTML);
+
+    </script>
 

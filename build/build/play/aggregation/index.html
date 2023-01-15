@@ -16,24 +16,30 @@ ul {
 li {
   display: inline;
 }
-code {
-  display: block;  
-  white-space: pre-wrap   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
 }
-.block {
-    float: left;
-    width: 45%;
-    height: 400px;
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 45%;
+  padding: 10px;
 }
-block2 {
-    width: 40%;
-    height: 400px;
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 </style>
   </head>
   <body>
   <h1>YAML -&gt; SQL</h1>
-    <div id="main" style="margin: 20px;">
+    <div id="main">
       <ul>
   <li>
     <a href="/">Values select</a>
@@ -45,48 +51,37 @@ block2 {
     <a href="/play/aggregation">Aggregation</a>
   </li>
   <li>
+    <a href="/play/join">Join</a>
+  </li>
+  <li>
     <a href="/docs">Docs</a>
   </li>
 </ul>
 <a _target="blank" href="https://stackoverflow.com/questions/60530599/how-to-express-sql-queries-in-yaml-format"><small>Why?.</small></a>
-<div class="block" style="margin-left: 10%; font-size: 15px;">
-<h2>Yaml</h2>
-<pre contenteditable class="language-yaml" data-linenumber="0" style="padding: 5px;">
-    
-  select:
-  - department_name
-  - operator: min
-    alias: min_salary
-    args:
-    - salary
-  from: employees
-  join:
-  - from: departments
-    type: inner_join
-    on:
-    - operator: =
-      left: department_name
-      right: &quot;test&quot;
-  group:
-  - department_name
-  
+<div class="row">
+  <div class="column" style="background-color:#aaa;font-size: 18px;">
+    <h2>YAML</h2>
+    <pre contenteditable class="language-yaml" data-linenumber="0">
+    /Users/dungth/.rbenv/versions/3.2.0/lib/ruby/gems/3.2.0/gems/arel-9.0.0/lib/arel/visitors/to_sql.rb:447:in `visit_Arel_Nodes_NamedFunction&#39;
 </pre>
-</div>
-<div class="block2" style="margin-right: 10%; font-size: 15px;">
-<h2>SQL</h2>
-<code class="language-sql line-numbers" style="padding: 5px;" id="sql_code">
-SELECT department_name, min(salary) AS min_salary FROM &quot;employees&quot; INNER JOIN &quot;departments&quot; ON department_name = test GROUP BY department_name
+  </div>
+  <div class="column" style="background-color:#bbb;font-size: 18px;">
+    <h2>SQL</h2>
+    <code class="language-sql line-numbers" id="sql_code">
+/Users/dungth/.rbenv/versions/3.2.0/lib/ruby/gems/3.2.0/gems/arel-9.0.0/lib/arel/collectors/plain_string.rb:14:in `&lt;&lt;&#39;
 </code>
+  </div>
 </div>
-
-
-    </div>
-    <script>
+<script>
 var code = document.querySelector('#sql_code');
 
 var format = window.sqlFormatter.format;
 code.innerText = format(code.innerHTML);
 
     </script>
+
+
+    </div>
+    
   </body>
 </html>

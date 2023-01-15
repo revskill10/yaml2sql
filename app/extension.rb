@@ -108,6 +108,7 @@ module Arel
 
           case child
           when Arel::Nodes::As
+            puts child.left.inspect
             name = child.left.name
             is_materialized = child.left.instance_variable_get(:@is_materialized) || false
             cte_name = child.left.instance_variable_get(:@cte_name) || false

@@ -1,0 +1,61 @@
+get_orders_query: &get_orders_query
+  select:
+  - field: client_id
+  - operator: sum
+    args:
+    - field: total
+    filter:
+      where:
+      - field: type
+        operator: = 
+        value: 'sales'
+    alias: total_sale
+  - operator: sum
+    args:
+    - field: total
+    filter:
+      where:
+      - field: type 
+        operator: = 
+        value: 'refunds'
+    alias: total_refunds
+  - operator: avg
+    args:
+    - field: total
+    filter:
+      where:
+      - field: type 
+        operator: = 
+        value: sales
+    alias: avg_ticket
+  - operator: count
+    alias: total_orders
+    args:
+    - field: "*"
+    filter:
+      where:
+      - field: type 
+        operator: = 
+        value: sales
+  from: orders
+  group_by:
+  - field: client_id
+
+
+main:
+  select:
+  - clients.*
+  - o.total_sales
+  - o.total_refunds
+  - o.avg_ticket
+  - o.num_of_sales
+  from: clients
+  join:
+  - query:
+      <<: *get_orders_query
+    alias: o
+    type: left_join
+    on:
+    - field: o.client_id
+      operator: =
+      value: clients.id

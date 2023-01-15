@@ -62,33 +62,70 @@ li {
   <div class="column" style="background-color:#aaa;font-size: 18px;">
     <h2>YAML</h2>
     <pre contenteditable class="language-yaml" data-linenumber="0">
-    
-  from: data
-  distinct_on:
-  - data.code
+    get_orders_query: &amp;get_orders_query
+  select:
+  - field: client_id
+  - operator: sum
+    args:
+    - field: total
+    filter:
+      where:
+      - field: type
+        operator: = 
+        value: &#39;sales&#39;
+    alias: total_sale
+  - operator: sum
+    args:
+    - field: total
+    filter:
+      where:
+      - field: type 
+        operator: = 
+        value: &#39;refunds&#39;
+    alias: total_refunds
+  - operator: avg
+    args:
+    - field: total
+    filter:
+      where:
+      - field: type 
+        operator: = 
+        value: sales
+    alias: avg_ticket
+  - operator: count
+    alias: total_orders
+    args:
+    - field: &quot;*&quot;
+    filter:
+      where:
+      - field: type 
+        operator: = 
+        value: sales
+  from: orders
+  group_by:
+  - field: client_id  select:
+  - clients.*
+  - o.total_sales
+  - o.total_refunds
+  - o.avg_ticket
+  - o.num_of_sales
+  from: clients
   join:
   - query:
-      from:        
-        values:
-        - key: &#39;us&#39;
-          value: &#39;test1&#39;
-        - key: &#39;fr&#39;
-          value: FR
-      alias: codes (code, name)
-    alias: countries
-    cte: countries (code, name)
+      &lt;&lt;: *get_orders_query
+    alias: o
     type: left_join
     on:
-    - left: countries.code
-      operator: &quot;=&quot;
-      right: data.code
+    - field: o.client_id
+      operator: =
+      value: clients.id
 
 </pre>
   </div>
   <div class="column" style="background-color:#bbb;font-size: 18px;">
     <h2>SQL</h2>
     <code class="language-sql line-numbers" id="sql_code">
-WITH &quot;countries&quot; AS (SELECT * FROM (VALUES (&#39;us&#39;, &#39;test1&#39;), (&#39;fr&#39;, &#39;FR&#39;)) AS codes (code, name)) SELECT DISTINCT ON ( data.code ) * FROM &quot;data&quot; LEFT JOIN &quot;countries&quot; ON countries.code = data.code
+SELECT clients.*, o.total_sales, o.total_refunds, o.avg_ticket, o.num_of_sales FROM &quot;clients&quot; LEFT JOIN (SELECT client_id, SUM(total) FILTER(WHERE type = sales) AS total_sale, SUM(total) FILTER(WHERE type = refunds) AS total_refunds, AVG(total) FILTER(WHERE type = sales) AS avg_ticket, COUNT(*) FILTER(WHERE type = sales) AS total_orders FROM &quot;orders&quot; GROUP BY client_id) o ON o.client_id = clients.id
 </code>
   </div>
 </div>

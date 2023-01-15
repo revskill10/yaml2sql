@@ -16,32 +16,32 @@ ul {
 li {
   display: inline;
 }
-code {
-  display: block;  
-  white-space: pre-wrap   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
 }
-.block {
-    float: left;
-    width: 45%;
-    height: 400px;
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 45%;
+  padding: 10px;
 }
-block2 {
-    width: 40%;
-    height: 400px;
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 </style>
   </head>
   <body>
   <h1>{{title}}</h1>
-    <div id="main" style="margin: 20px;">
+    <div id="main">
       {{{yield}}}
     </div>
-    <script>
-var code = document.querySelector('#sql_code');
-
-var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
-
-    </script>
+    
   </body>
 </html>
