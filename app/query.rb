@@ -473,6 +473,7 @@ class Query
   def with_alias(al, q, with_name: al, is_materialized: false)
     cte_table = Arel::Table.new(al)
     cte_table.instance_variable_set(:@is_materialized, is_materialized)
+    cte_table.instance_variable_set(:@cte_name, with_name)
     return cte_table, Arel::Nodes::As.new(cte_table, q)
   end
 
@@ -624,7 +625,6 @@ class Query
             query = query.join(ori, get_join_type(j[:type])).on(tmp_cond)
             next
           else
-            puts "QUERY is #{query.to_sql}"
             query = query.join(ori, get_join_type(j[:type]))
             next
           end

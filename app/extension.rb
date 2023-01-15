@@ -110,13 +110,14 @@ module Arel
           when Arel::Nodes::As
             name = child.left.name
             is_materialized = child.left.instance_variable_get(:@is_materialized) || false
+            cte_name = child.left.instance_variable_get(:@cte_name) || false
             relation = child.right
           when Arel::Nodes::TableAlias
             name = child.name
             relation = child.relation
           end
 
-          collector << quote_table_name(name)
+          collector << quote_table_name(cte_name || name)
           collector << " AS NOT MATERIALIZED " if !is_materialized
           collector << " AS MATERIALIZED " if is_materialized
           visit relation, collector
