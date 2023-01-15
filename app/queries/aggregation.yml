@@ -4,7 +4,7 @@ main:
   - operator: min
     alias: min_salary
     args:
-    - salary
+    - field: salary
   from: employees
   join:
   - from: departments

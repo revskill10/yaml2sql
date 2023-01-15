@@ -123,6 +123,7 @@ module ValueParser
 
     op = d[:operator].to_sym
     operation = "visit_#{op}"
+    puts "OP: #{op}"
     if respond_to?(operation)
       tmp = send "visit_#{op}", d
     else
@@ -157,7 +158,8 @@ module ValueParser
     else
       tmp = get_col(args[0]).send(aggop)
     end
-    if node.fetch(:filter).fetch(:where).present?
+
+    if node[:filter] and node[:filter][:where]
       fil = node[:filter][:where]
       ff = Predicate.new(node[:alias] || :test).(fil)
       tmp = Arel.sql("#{tmp.to_sql} FILTER(WHERE #{ff.to_sql})")
@@ -174,11 +176,11 @@ module ValueParser
     visit_aggregator(node, :sum_if)
   end
 
-  def visit_minimum(node)
+  def visit_min(node)
     visit_aggregator(node, :minimum)
   end
 
-  def visit_maximum(node)
+  def visit_max(node)
     visit_aggregator(node, :maximum)
   end
 
@@ -439,7 +441,6 @@ class Selector
   end
 
   def get_alias(node, alia = nil)
-    puts "NODE #{node}"
     return node.as(alia) if alia
     node
   end

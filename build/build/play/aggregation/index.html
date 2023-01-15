@@ -62,13 +62,30 @@ li {
   <div class="column" style="background-color:#aaa;font-size: 18px;">
     <h2>YAML</h2>
     <pre contenteditable class="language-yaml" data-linenumber="0">
-    /Users/dungth/.rbenv/versions/3.2.0/lib/ruby/gems/3.2.0/gems/arel-9.0.0/lib/arel/visitors/to_sql.rb:447:in `visit_Arel_Nodes_NamedFunction&#39;
+    
+  select:
+  - department_name
+  - operator: min
+    alias: min_salary
+    args:
+    - field: salary
+  from: employees
+  join:
+  - from: departments
+    type: inner_join
+    on:
+    - operator: =
+      left: department_name
+      right: &quot;test&quot;
+  group:
+  - department_name
+  
 </pre>
   </div>
   <div class="column" style="background-color:#bbb;font-size: 18px;">
     <h2>SQL</h2>
     <code class="language-sql line-numbers" id="sql_code">
-/Users/dungth/.rbenv/versions/3.2.0/lib/ruby/gems/3.2.0/gems/arel-9.0.0/lib/arel/collectors/plain_string.rb:14:in `&lt;&lt;&#39;
+SELECT department_name, MIN(salary) AS min_salary FROM &quot;employees&quot; INNER JOIN &quot;departments&quot; ON department_name = test GROUP BY department_name
 </code>
   </div>
 </div>
