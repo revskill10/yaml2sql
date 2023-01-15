@@ -12,7 +12,7 @@ class App
       end
 
       def yaml_content
-        @y.gsub("    ---\n\n", "").gsub("\n\n", "")
+        @y.gsub("---\n\n", "").gsub("\n\n", "")
       end
     end
   end

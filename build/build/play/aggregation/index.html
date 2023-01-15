@@ -36,6 +36,13 @@ li {
   clear: both;
 }
 </style>
+<script>
+var code = document.querySelector('#sql_code');
+
+var format = window.sqlFormatter.format;
+code.innerText = format(code.innerHTML);
+
+    </script>
   </head>
   <body>
   <h1>YAML -&gt; SQL</h1>
@@ -90,13 +97,7 @@ SELECT department_name, MIN(salary) AS min_salary FROM &quot;employees&quot; INN
 </code>
   </div>
 </div>
-<script>
-var code = document.querySelector('#sql_code');
 
-var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
-
-    </script>
 
 
     </div>

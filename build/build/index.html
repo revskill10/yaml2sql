@@ -36,6 +36,13 @@ li {
   clear: both;
 }
 </style>
+<script>
+var code = document.querySelector('#sql_code');
+
+var format = window.sqlFormatter.format;
+code.innerText = format(code.innerHTML);
+
+    </script>
   </head>
   <body>
   <h1>YAML -&gt; SQL</h1>
@@ -93,13 +100,7 @@ WITH &quot;countries&quot; AS (SELECT * FROM (VALUES (&#39;us&#39;, &#39;test1&#
 </code>
   </div>
 </div>
-<script>
-var code = document.querySelector('#sql_code');
 
-var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
-
-    </script>
 
 
     </div>

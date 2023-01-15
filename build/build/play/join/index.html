@@ -36,6 +36,13 @@ li {
   clear: both;
 }
 </style>
+<script>
+var code = document.querySelector('#sql_code');
+
+var format = window.sqlFormatter.format;
+code.innerText = format(code.innerHTML);
+
+    </script>
   </head>
   <body>
   <h1>YAML -&gt; SQL</h1>
@@ -132,13 +139,7 @@ SELECT clients.*, o.total_sales, o.total_refunds, o.avg_ticket, o.num_of_sales F
 </code>
   </div>
 </div>
-<script>
-var code = document.querySelector('#sql_code');
 
-var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
-
-    </script>
 
 
     </div>
