@@ -540,7 +540,7 @@ class Query
       ), Arel.sql(table[:alias]))
       qu = Selector.new(table[:alias]).(table[:select])
 
-      return qu.from(from) #.as(table[:alias])
+      return qu.from(values_from) #.as(table[:alias])
     end
 
     sub_query_from = nil
