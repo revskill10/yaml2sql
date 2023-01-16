@@ -94,6 +94,8 @@ class Lexer
 end
 
 module ValueParser
+  include ExternalHelpers
+
   def get_col(d)
     return nil unless d
 
@@ -137,6 +139,25 @@ module ValueParser
     Predicate.new(:test).call(args)
   end
 
+  def visit_external(op, node)
+    if node[:args]
+      args = node[:args] || []
+      nargs = args.map do |r|
+        get_col(r)
+      end
+      puts "#{op} #{node}"
+      Arel::Nodes::NamedFunction.new(op, nargs, node[:alias]) if node[:alias]
+      Arel::Nodes::NamedFunction.new(op, nargs)
+    else
+      Arel::Nodes::InfixOperation.new(op, get_col(node[:left]), get_col(node[:right]))
+    end
+  end
+
+  def get_alias(node, alia = nil)
+    return node.as(alia) if alia
+    node
+  end
+
   def visit_case(node)
     tmp = Arel::Nodes::Case.new
     args = node[:args]
@@ -146,6 +167,25 @@ module ValueParser
     end
     tmp = tmp.else(get_col(node[:else])) if node[:else]
     tmp
+  end
+
+  def visit_generate_series(node)
+    args = node[:args]
+    puts "ARGS #{args}"
+    raise "Need from, start and optinal range args" unless (args.is_a?(Array) and args.length >= 2)
+    from = get_col(args[0])
+    to = get_col(args[1])
+    by = get_col(args[2])
+    options = { as: node[:alias] } if node[:alias]
+    series(from, to, by, options || {})
+  end
+
+  def visit_date_trunc(node)
+    args = node[:args]
+    day = get_col(args[0])
+    field = get_col(args[1])
+    options = { as: node[:alias] } if node[:alias]
+    date_trunc(day, field, options)
   end
 
   def visit_aggregator(node, aggop)
@@ -193,10 +233,10 @@ module ValueParser
   end
 
   def process_args(n, default_key)
-    if n.fetch(default_key).present?
+    if n&.fetch(default_key).present?
       return n[default_key]
     end
-    if n.fetch(:args).present?
+    if n&.fetch(:args).present?
       args = n[:args]
       query = args if args.is_a?(Hash)
       query = args[0] if args.is_a?(Array) and args.length >= 1
@@ -408,7 +448,7 @@ class Selector
   end
 
   def visit(c, is_group = false)
-    return @collector.project(Arel.star) if c.nil?
+    return @collector.project(Arel.star) if @collector and c.nil?
 
     d = { fields: c.dup } if c.is_a?(Array)
     d = c.dup if c.is_a?(Hash) and c[:fields]
@@ -416,7 +456,7 @@ class Selector
     cols = d[:fields].map do |f|
       get_col(f)
     end
-
+    return cols if !@collector
     if !is_group
       tmp = @collector.project(*cols)
       return tmp if c.is_a?(Hash) and !true?(c[:distinct])
@@ -426,23 +466,6 @@ class Selector
       return @collector.group(*cols)
     end
     #raise StandardError("Distinct on multiple columns error #{cols.inspect}")
-  end
-
-  def visit_external(op, node)
-    if node[:args]
-      args = node[:args] || []
-      nargs = args.map do |r|
-        get_col(r)
-      end
-      Arel::Nodes::NamedFunction.new(op, nargs, node[:alias])
-    else
-      Arel::Nodes::InfixOperation.new(op, get_col(node[:left]), get_col(node[:right]))
-    end
-  end
-
-  def get_alias(node, alia = nil)
-    return node.as(alia) if alia
-    node
   end
 
   def visit_extract(node, args)
@@ -494,13 +517,25 @@ class Query
       arel = create_arel(table[:from], table[:alias])
     end
 
+    if table[:from].is_a?(Hash) and table[:from][:operator]
+      operator_from = get_col(table[:from])
+
+      if table[:alias]
+        operator_from = as(operator_from, Arel.sql(table[:alias]))
+      end
+      #puts "FROM #{from.to_sql}"
+      qu = Selector.new(table[:alias]).(table[:select])
+      return Arel.sql("SELECT #{qu.map(&:to_sql).join(", ")} FROM #{operator_from.to_sql}") #.as(table[:alias])
+      #return qu.from(operator_from)
+    end
+
     sym = table[:from]
 
     if !arel and sym.is_a?(Hash) and sym[:values].is_a?(Array)
       values = sym[:values].map do |kk|
         [kk[:key], kk[:value]]
       end
-      from = as(grouping(
+      values_from = as(grouping(
         values_list(values),
       ), Arel.sql(table[:alias]))
       qu = Selector.new(table[:alias]).(table[:select])
@@ -539,6 +574,8 @@ class Query
       query = query.distinct_on(*colls)
     end
     query = query.from(sub_query_from) if sub_query_from
+    query = Arel.sql(values_from.to_sql) if values_from
+    query = Arel.sql(operator_from.to_sql) if operator_from
     query = query.from(arel) if !sub_query_from
 
     if table[:where]
@@ -605,7 +642,7 @@ class Query
         end
       end
       if table[:except]
-        raise StandardError.new("Require Union or Intersect") if !table[:union] and !table[:intersect]
+        raise "Require Union or Intersect" if !table[:union] and !table[:intersect]
 
         table[:except].each do |j|
           j[:alias] = j[:alias] || j[:query][:from]
@@ -752,7 +789,7 @@ end
 class QueryRunner
   def run!(content)
     cc = content.gsub(/on:/, "where:")
-    r = Psych.safe_load(cc, aliases: true, symbolize_names: true)
+    r = Psych.safe_load(cc, aliases: true, symbolize_names: true, permitted_classes: [Date])
     q = Query.new.(r[:main], true)
     puts "QUERY: #{q}"
     validate_sql!(q)

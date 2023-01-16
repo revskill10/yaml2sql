@@ -166,9 +166,40 @@ def locate(field, string)
   named_function("LOCATE", field, sql_literal(string))
 end
 
-def named_function(function_name, args)
-  Arel::Nodes::NamedFunction.new(function_name, args)
+module ExternalHelpers
+  def timestamp(ts)
+    Arel::Nodes::NamedFunction.new(
+      "CAST", [
+        Arel::Nodes::As.new(
+          ts,
+          Arel::Nodes::SqlLiteral.new("timestamp")
+        ),
+      ]
+    )
+  end
+
+  def series(from, to, by, options = {})
+    tmp = Arel::Nodes::NamedFunction.new(
+      "GENERATE_SERIES", [
+        timestamp(from),
+        timestamp(to),
+        by,
+      ]
+    )
+    tmp.as(options.fetch(:as, "series")) if options and options[:as]
+    tmp
+  end
+
+  def date_trunc(by, attribute, options = {})
+    tmp = Arel::Nodes::NamedFunction.new(
+      "DATE_TRUNC", [Arel.sql("#{by.to_sql}"), attribute]
+    )
+    return tmp.as(options.fetch(:as)) if options and options.fetch(:as)
+    return tmp
+  end
 end
+
+# series(5.days.ago, 4.days.ago, "'1 hour'", as: 'date_range')
 
 def quoted(val)
   # parser here

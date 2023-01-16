@@ -1,0 +1,13 @@
+main:
+  select:
+  - operator: date_trunc
+    args:
+    - value: hour
+    - field: date_range
+  from:
+    operator: generate_series
+    args:
+    - value: 2015-02-03
+    - value: 2019-02-10
+    - value: '1 hour'
+    alias: date_range

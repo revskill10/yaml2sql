@@ -10,7 +10,7 @@ end
 Parklife.application.routes do
   root
 
-  %w(complex aggregation join).each do |name|
+  %w(complex aggregation join generate_series).each do |name|
     get "/play/#{name}"
   end
   get "/"
