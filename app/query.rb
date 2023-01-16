@@ -525,8 +525,11 @@ class Query
       end
       #puts "FROM #{from.to_sql}"
       qu = Selector.new(table[:alias]).(table[:select])
-      return Arel.sql("SELECT #{qu.map(&:to_sql).join(", ")} FROM #{operator_from.to_sql}") #.as(table[:alias])
-      #return qu.from(operator_from)
+      if qu.is_a?(Array)
+        return Arel.sql("SELECT #{qu.map(&:to_sql).join(", ")} FROM #{operator_from.to_sql}") #.as(table[:alias])
+      else
+        return qu.from(operator_from)
+      end
     end
 
     sym = table[:from]
@@ -539,8 +542,11 @@ class Query
         values_list(values),
       ), Arel.sql(table[:alias]))
       qu = Selector.new(table[:alias]).(table[:select])
-
-      return qu.from(values_from) #.as(table[:alias])
+      if qu.is_a?(Array)
+        return Arel.sql("SELECT #{qu.map(&:to_sql).join(", ")} FROM #{values_from.to_sql}") #.as(table[:alias])
+      else
+        return qu.from(values_from) #.as(table[:alias])
+      end
     end
 
     sub_query_from = nil
