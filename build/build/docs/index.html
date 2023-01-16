@@ -36,13 +36,7 @@ li {
   clear: both;
 }
 </style>
-<script>
-var code = document.querySelector('#sql_code');
 
-var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
-
-    </script>
   </head>
   <body>
   <h1>YAML -&gt; SQL</h1>
@@ -78,6 +72,12 @@ code.innerText = format(code.innerHTML);
 <p>There's no spec yet.</p>
 
     </div>
-    
+    <script>
+var code = document.querySelector('#sql_code');
+
+var format = window.sqlFormatter.format;
+code.innerText = format(code.innerHTML);
+
+    </script>
   </body>
 </html>

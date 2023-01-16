@@ -36,13 +36,7 @@ li {
   clear: both;
 }
 </style>
-<script>
-var code = document.querySelector('#sql_code');
 
-var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
-
-    </script>
   </head>
   <body>
   <h1>YAML -&gt; SQL</h1>
@@ -69,9 +63,10 @@ code.innerText = format(code.innerHTML);
 </ul>
 <a _target="blank" href="https://stackoverflow.com/questions/60530599/how-to-express-sql-queries-in-yaml-format"><small>Why?.</small></a>
 <div class="row">
-  <div class="column" style="background-color:#aaa;font-size: 18px;">
+  <div class="column" style="font-size: 18px;">
     <h2>YAML</h2>
     <pre contenteditable class="language-yaml" data-linenumber="0">
+    <code>
     
 main:
   select:
@@ -86,19 +81,28 @@ main:
     - value: 2019-02-10
     - value: 1 hour
     alias: date_range
+    </code>
 </pre>
   </div>
-  <div class="column" style="background-color:#bbb;font-size: 18px;">
+  <div  style="font-size: 18px;">
     <h2>SQL</h2>
-    <code class="language-sql line-numbers" id="sql_code">
+    <pre>
+<code class="language-sql line-numbers" id="sql_code">
 SELECT DATE_TRUNC(&#39;hour&#39;, date_range) FROM GENERATE_SERIES(CAST(&#39;2015-02-03&#39; AS timestamp), CAST(&#39;2019-02-10&#39; AS timestamp), &#39;1 hour&#39;) AS date_range
 </code>
+</pre>
   </div>
 </div>
 
 
 
     </div>
-    
+    <script>
+var code = document.querySelector('#sql_code');
+
+var format = window.sqlFormatter.format;
+code.innerText = format(code.innerHTML);
+
+    </script>
   </body>
 </html>

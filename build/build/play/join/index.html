@@ -36,13 +36,7 @@ li {
   clear: both;
 }
 </style>
-<script>
-var code = document.querySelector('#sql_code');
 
-var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
-
-    </script>
   </head>
   <body>
   <h1>YAML -&gt; SQL</h1>
@@ -69,9 +63,10 @@ code.innerText = format(code.innerHTML);
 </ul>
 <a _target="blank" href="https://stackoverflow.com/questions/60530599/how-to-express-sql-queries-in-yaml-format"><small>Why?.</small></a>
 <div class="row">
-  <div class="column" style="background-color:#aaa;font-size: 18px;">
+  <div class="column" style="font-size: 18px;">
     <h2>YAML</h2>
     <pre contenteditable class="language-yaml" data-linenumber="0">
+    <code>
     
 get_orders_query: &amp;get_orders_query
   select:
@@ -133,19 +128,28 @@ main:
       operator: =
       value: clients.id
 
+    </code>
 </pre>
   </div>
-  <div class="column" style="background-color:#bbb;font-size: 18px;">
+  <div  style="font-size: 18px;">
     <h2>SQL</h2>
-    <code class="language-sql line-numbers" id="sql_code">
+    <pre>
+<code class="language-sql line-numbers" id="sql_code">
 SELECT clients.*, o.total_sales, o.total_refunds, o.avg_ticket, o.num_of_sales FROM &quot;clients&quot; LEFT JOIN (SELECT client_id, SUM(total) FILTER(WHERE type = sales) AS total_sale, SUM(total) FILTER(WHERE type = refunds) AS total_refunds, AVG(total) FILTER(WHERE type = sales) AS avg_ticket, COUNT(*) FILTER(WHERE type = sales) AS total_orders FROM &quot;orders&quot; GROUP BY client_id) o ON o.client_id = clients.id
 </code>
+</pre>
   </div>
 </div>
 
 
 
     </div>
-    
+    <script>
+var code = document.querySelector('#sql_code');
+
+var format = window.sqlFormatter.format;
+code.innerText = format(code.innerHTML);
+
+    </script>
   </body>
 </html>

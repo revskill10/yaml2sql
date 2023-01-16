@@ -36,13 +36,7 @@ li {
   clear: both;
 }
 </style>
-<script>
-var code = document.querySelector('#sql_code');
 
-var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
-
-    </script>
   </head>
   <body>
   <h1>YAML -&gt; SQL</h1>
@@ -69,9 +63,10 @@ code.innerText = format(code.innerHTML);
 </ul>
 <a _target="blank" href="https://stackoverflow.com/questions/60530599/how-to-express-sql-queries-in-yaml-format"><small>Why?.</small></a>
 <div class="row">
-  <div class="column" style="background-color:#aaa;font-size: 18px;">
+  <div class="column" style="font-size: 18px;">
     <h2>YAML</h2>
     <pre contenteditable class="language-yaml" data-linenumber="0">
+    <code>
     
 main:
   from: salary_increase
@@ -89,19 +84,28 @@ main:
       left: i.emp_id
       right: e.emp_id
 
+    </code>
 </pre>
   </div>
-  <div class="column" style="background-color:#bbb;font-size: 18px;">
+  <div  style="font-size: 18px;">
     <h2>SQL</h2>
-    <code class="language-sql line-numbers" id="sql_code">
+    <pre>
+<code class="language-sql line-numbers" id="sql_code">
 SELECT e.emp_id, e.inc_date, t.TotalInc, t.MaxIncAmount FROM &quot;salary_increase&quot; &quot;ix&quot; JOIN &quot;emp_table&quot; &quot;e&quot; ON i.emp_id = e.emp_id
 </code>
+</pre>
   </div>
 </div>
 
 
 
     </div>
-    
+    <script>
+var code = document.querySelector('#sql_code');
+
+var format = window.sqlFormatter.format;
+code.innerText = format(code.innerHTML);
+
+    </script>
   </body>
 </html>
