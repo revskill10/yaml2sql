@@ -72,13 +72,34 @@ code.innerText = format(code.innerHTML);
   <div class="column" style="background-color:#aaa;font-size: 18px;">
     <h2>YAML</h2>
     <pre contenteditable class="language-yaml" data-linenumber="0">
-    /Users/dungth/learning/rubyapps/saas/docs/service/app/query.rb:673:in `block in call&#39;
+    
+main:
+  from: data
+  distinct_on:
+  - data.code
+  join:
+  - query:
+      from:        
+        values:
+        - key: &#39;us&#39;
+          value: &#39;test1&#39;
+        - key: &#39;fr&#39;
+          value: FR
+      alias: codes (code, name)
+    alias: countries
+    cte: countries (code, name)
+    type: left_join
+    on:
+    - left: countries.code
+      operator: &quot;=&quot;
+      right: data.code
+
 </pre>
   </div>
   <div class="column" style="background-color:#bbb;font-size: 18px;">
     <h2>SQL</h2>
     <code class="language-sql line-numbers" id="sql_code">
-/Users/dungth/learning/rubyapps/saas/docs/service/app/query.rb:543:in `call&#39;
+WITH &quot;countries&quot; AS (SELECT * FROM (VALUES (&#39;us&#39;, &#39;test1&#39;), (&#39;fr&#39;, &#39;FR&#39;)) AS codes (code, name)) SELECT DISTINCT ON ( data.code ) * FROM &quot;data&quot; LEFT JOIN &quot;countries&quot; ON countries.code = data.code
 </code>
   </div>
 </div>
