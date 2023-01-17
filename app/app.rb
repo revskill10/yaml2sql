@@ -39,7 +39,7 @@ class App < Sinatra::Base
   end
 
   get "/play/:view?" do
-    view_name = params[:view] || "values_select"
+    view_name = params[:view] || "simple"
     puts "View #{view_name}"
     @y = File.read(__dir__ + "/queries/#{view_name.to_sym}.yml")
 
@@ -58,14 +58,13 @@ class App < Sinatra::Base
     end
   end
   get "/" do
-    view_name = params[:view] || "values_select"
+    view_name = params[:view] || "simple"
     puts "View #{view_name}"
     @y = File.read(__dir__ + "/queries/#{view_name.to_sym}.yml")
 
     c = @y.gsub(/on:/, "where:")
 
     r = Psych.safe_load(c, aliases: true, symbolize_names: true, permitted_classes: [Date])
-    puts "SSS: #{r}"
     v = YamlView.new
     v.process(r)
     begin
