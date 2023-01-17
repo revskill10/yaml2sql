@@ -5,6 +5,7 @@ require "mustache/sinatra"
 require_relative "query"
 require "pygments"
 require "rdiscount"
+require_relative "views/yaml"
 
 class PgQueryRunner < QueryRunner
   pg_connection
@@ -39,28 +40,40 @@ class App < Sinatra::Base
 
   get "/play/:view?" do
     view_name = params[:view] || "values_select"
-    #r = mustache view_name.to_sym, layout: false
-    f = File.read(__dir__ + "/queries/#{view_name.to_sym}.yml")
-    params[:fr] ||= "FR"
-    r = Mustache.render(f, { params: OpenStruct.new(params) })
+    puts "View #{view_name}"
+    @y = File.read(__dir__ + "/queries/#{view_name.to_sym}.yml")
+
+    c = @y.gsub(/on:/, "where:")
+
+    r = Psych.safe_load(c, aliases: true, symbolize_names: true, permitted_classes: [Date])
+    puts "SSS: #{r}"
+    v = YamlView.new
+    v.process(r)
     begin
-      @h, @y = settings.runner.run!(r)
+      @h = settings.runner.run!(v.ctx)
       mustache :simple
     rescue => e
       e.message
+      e.backtrace
     end
   end
   get "/" do
-    view_name = "values_select"
-    #r = mustache view_name.to_sym, layout: false
-    f = File.read(__dir__ + "/queries/#{view_name.to_sym}.yml")
-    params[:fr] ||= "FR"
-    r = Mustache.render(f, { params: OpenStruct.new(params) })
+    view_name = params[:view] || "values_select"
+    puts "View #{view_name}"
+    @y = File.read(__dir__ + "/queries/#{view_name.to_sym}.yml")
+
+    c = @y.gsub(/on:/, "where:")
+
+    r = Psych.safe_load(c, aliases: true, symbolize_names: true, permitted_classes: [Date])
+    puts "SSS: #{r}"
+    v = YamlView.new
+    v.process(r)
     begin
-      @h, @y = settings.runner.run!(r)
+      @h = settings.runner.run!(v.ctx)
       mustache :simple
     rescue => e
       e.message
+      e.backtrace
     end
   end
 end

@@ -1,4 +1,10 @@
 ---
+declare:
+  eql:
+    operator: =
+    left: $1
+    value: $2
+    
 main:
   from: payments
   alias: p
@@ -9,14 +15,9 @@ main:
     - i.clicks
     - p.amount
   where:
-  - operator: =
-    left: user_id
-    right: 1
+  - apply: ["eql", "user_id", "12"]
   group:
   - date
-  join:
-  - from: user_impressions
-    alias: i
-    cte: true
+  
     
 

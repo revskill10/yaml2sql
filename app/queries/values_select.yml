@@ -10,7 +10,7 @@ main:
         - key: 'us'
           value: 'test1'
         - key: 'fr'
-          value: {{ params.fr }}
+          value: 'France'
       alias: codes (code, name)
     alias: countries
     cte: countries (code, name)

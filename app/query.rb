@@ -580,8 +580,6 @@ class Query
       query = query.distinct_on(*colls)
     end
     query = query.from(sub_query_from) if sub_query_from
-    query = Arel.sql(values_from.to_sql) if values_from
-    query = Arel.sql(operator_from.to_sql) if operator_from
     query = query.from(arel) if !sub_query_from
 
     if table[:where]
@@ -783,23 +781,12 @@ def test
   #   puts a.to_sql
 end
 
-def recursive_gsub(search, replace, value)
-  case value
-  when String
-    value.gsub!(search, replace)
-  when Array, Hash
-    value.each { |v| recursive_gsub(search, replace, v) }
-  end
-end
-
 class QueryRunner
-  def run!(content)
-    cc = content.gsub(/on:/, "where:")
-    r = Psych.safe_load(cc, aliases: true, symbolize_names: true, permitted_classes: [Date])
+  def run!(r)
     q = Query.new.(r[:main], true)
     puts "QUERY: #{q}"
     validate_sql!(q)
-    [q, content]
+    q
   rescue => e
     puts "EEE: #{e}"
     e.message
