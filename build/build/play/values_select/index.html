@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      YAML -&gt; SQL
+    </title>
+<script src="https://unpkg.com/sql-formatter@2.3.3/dist/sql-formatter.min.js"></script>
+
+<style>
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  display: inline;
+}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 45%;
+  padding: 10px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
+
+  </head>
+  <body>
+  <h1>YAML -&gt; SQL</h1>
+    <div id="main">
+      <ul>
+<li>
+    <a href="/">Simple</a>
+  </li>
+  <li>
+    <a href="/play/values_select">Values select</a>
+  </li>
+  <li>
+    <a href="/play/complex">Complex</a>
+  </li>
+  <li>
+    <a href="/play/aggregation">Aggregation</a>
+  </li>
+  <li>
+    <a href="/play/join">Join</a>
+  </li>
+  <li>
+    <a href="/play/generate_series">Generate Series</a>
+  </li>
+  <li>
+    <a href="/docs">Docs</a>
+  </li>
+</ul>
+<a _target="blank" href="https://stackoverflow.com/questions/60530599/how-to-express-sql-queries-in-yaml-format"><small>Why?.</small></a>
+<div class="row">
+  <div class="column" style="font-size: 18px;">
+    <h2>YAML</h2>
+    <pre contenteditable class="language-yaml" data-linenumber="0">
+    <code>
+    
+main:
+  from: data
+  distinct_on:
+  - data.code
+  join:
+  - query:
+      from:        
+        values:
+        - key: &#39;us&#39;
+          value: &#39;test1&#39;
+        - key: &#39;fr&#39;
+          value: &#39;France&#39;
+      alias: codes (code, name)
+    alias: countries
+    cte: countries (code, name)
+    type: left_join
+    on:
+    - left: countries.code
+      operator: &quot;=&quot;
+      right: data.code
+
+    </code>
+</pre>
+  </div>
+  <div  style="font-size: 18px;">
+    <h2>SQL</h2>
+    <pre>
+<code class="language-sql line-numbers" id="sql_code">
+WITH &quot;countries&quot; AS (SELECT * FROM (VALUES (&#39;us&#39;, &#39;test1&#39;), (&#39;fr&#39;, &#39;France&#39;)) AS codes (code, name)) SELECT DISTINCT ON ( data.code ) * FROM &quot;data&quot; LEFT JOIN &quot;countries&quot; ON countries.code = data.code
+</code>
+</pre>
+  </div>
+</div>
+
+
+
+    </div>
+    <script>
+var code = document.querySelector('#sql_code');
+
+var format = window.sqlFormatter.format;
+code.innerText = format(code.innerHTML);
+
+    </script>
+  </body>
+</html>
