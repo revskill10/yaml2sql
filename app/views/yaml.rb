@@ -23,7 +23,7 @@ class YamlView
   end
 
   def process(ct)
-    @origin = ct
+    @origin = ct.dup
     @ct = ct
     nested_hash_value(@ct, :apply)
     puts "CT: #{@ct}"
