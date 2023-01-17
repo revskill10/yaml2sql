@@ -4,16 +4,18 @@ declare:
     operator: =
     left: $1
     value: $2
+  sum:
+    operator: sum
+    args:
+    - $1
     
 main:
   from: payments
   alias: p
   select:
-  - operator: sum
-    args:
-    - i.views
-    - i.clicks
-    - p.amount
+  - apply: ["sum", "i.views"]
+  - apply: ["sum", "i.clicks"]
+  - apply: ["sum", "p.amount"]
   where:
   - apply: ["eql", "user_id", "12"]
   group:

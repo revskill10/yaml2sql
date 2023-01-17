@@ -76,16 +76,18 @@ declare:
     operator: =
     left: $1
     value: $2
+  sum:
+    operator: sum
+    args:
+    - $1
     
 main:
   from: payments
   alias: p
   select:
-  - operator: sum
-    args:
-    - i.views
-    - i.clicks
-    - p.amount
+  - apply: [&quot;sum&quot;, &quot;i.views&quot;]
+  - apply: [&quot;sum&quot;, &quot;i.clicks&quot;]
+  - apply: [&quot;sum&quot;, &quot;p.amount&quot;]
   where:
   - apply: [&quot;eql&quot;, &quot;user_id&quot;, &quot;12&quot;]
   group:
@@ -99,7 +101,7 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-SELECT SUM(i.views) FROM &quot;payments&quot; &quot;p&quot; WHERE user_id = 12 GROUP BY date
+SELECT SUM(i.views), SUM(i.views), SUM(i.views) FROM &quot;payments&quot; &quot;p&quot; WHERE user_id = 12 GROUP BY date
 </code>
 </pre>
   </div>
