@@ -41,7 +41,6 @@ get_orders_query: &get_orders_query
   from: orders
   group_by:
   - field: client_id
-
 main:
   select:
   - clients.*

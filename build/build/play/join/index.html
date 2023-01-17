@@ -64,7 +64,7 @@ li {
     <a href="/docs">Docs</a>
   </li>
 </ul>
-<a _target="blank" href="https://stackoverflow.com/questions/60530599/how-to-express-sql-queries-in-yaml-format"><small>Why?.</small></a>
+<a target="_blank" href="https://stackoverflow.com/questions/60530599/how-to-express-sql-queries-in-yaml-format"><small>Why?.</small></a>
 <div class="row">
   <div class="column" style="font-size: 18px;">
     <h2>YAML</h2>
@@ -112,7 +112,8 @@ get_orders_query: &amp;get_orders_query
         value: sales
   from: orders
   group_by:
-  - field: client_idmain:
+  - field: client_id
+main:
   select:
   - clients.*
   - o.total_sales
