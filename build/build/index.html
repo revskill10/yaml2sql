@@ -101,7 +101,7 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-SELECT SUM(i.views), SUM(i.views), SUM(i.views) FROM &quot;payments&quot; &quot;p&quot; WHERE user_id = 12 GROUP BY date
+SELECT SUM(i.views), SUM(i.clicks), SUM(p.amount) FROM &quot;payments&quot; &quot;p&quot; WHERE user_id = 12 GROUP BY date
 </code>
 </pre>
   </div>

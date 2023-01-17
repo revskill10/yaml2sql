@@ -8,6 +8,10 @@ class Hash
   end
 end
 
+def deep_copy(o)
+  Marshal.load(Marshal.dump(o))
+end
+
 def recursive_gsub!(search, replace, value)
   case value
   when String
@@ -23,7 +27,7 @@ class YamlView
   end
 
   def process(ct)
-    @origin = ct.dup
+    @origin = ct[:declare].clone
     @ct = ct
     nested_hash_value(@ct, :apply)
     puts "CT: #{@ct}"
@@ -44,8 +48,9 @@ class YamlView
   def apply(obj, key)
     main, *args = obj[key]
     fname = main.to_sym
-    fn = @origin[:declare][fname]
-    args.each_with_index do |arg, idx|
+    str_args = args.map(&:to_s)
+    fn = deep_copy(@origin)[fname]
+    str_args.each_with_index do |arg, idx|
       ptr = "$#{(idx + 1).to_s}"
       recursive_gsub!(ptr, arg, fn)
     end
