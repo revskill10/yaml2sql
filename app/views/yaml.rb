@@ -31,7 +31,9 @@ class YamlView
 
   def nested_hash_value(obj, key)
     if obj.respond_to?(:key?) && obj.key?(key)
-      obj.merge!(apply(obj, key))
+      new_obj = apply(obj, key)
+      obj.merge!(new_obj)
+      #@origin[:declare][]
     elsif obj.respond_to?(:each)
       obj.each do |ob|
         nested_hash_value(ob, key)
@@ -42,12 +44,11 @@ class YamlView
   def apply(obj, key)
     main, *args = obj[key]
     fname = main.to_sym
-    fn = @ct[:declare][fname]
+    fn = @origin[:declare][fname]
     args.each_with_index do |arg, idx|
       ptr = "$#{(idx + 1).to_s}"
       recursive_gsub!(ptr, arg, fn)
     end
-    obj.delete key
     fn
   end
 end
