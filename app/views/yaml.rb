@@ -41,6 +41,10 @@ class YamlView
       obj.each do |ob|
         nested_hash_value(ob, key)
       end
+    elsif obj.respond_to?(:key?) && obj.is_a?(String)
+      puts "OBJ: #{obj}"
+      new_obj = apply(obj, key)
+      obj.merge!(new_obj)
     end
   end
 

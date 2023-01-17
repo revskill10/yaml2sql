@@ -76,11 +76,14 @@ declare:
     operator: =
     left: $1
     value: $2
+  get_sum: 
+    operator: $1
   sum:
-    operator: sum
+    apply: [&quot;get_sum&quot;, &quot;sum&quot;]
     args:
     - $1
-    
+  group_by:
+    field: $1
 main:
   from: payments
   alias: p
@@ -91,7 +94,7 @@ main:
   where:
   - apply: [&quot;eql&quot;, &quot;user_id&quot;, &quot;12&quot;]
   group:
-  - date
+  - apply: [&quot;group_by&quot;, &quot;date&quot;]
   
     
     </code>
