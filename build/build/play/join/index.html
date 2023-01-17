@@ -70,7 +70,8 @@ li {
     <h2>YAML</h2>
     <pre contenteditable class="language-yaml" data-linenumber="0">
     <code>
-    get_orders_query: &amp;get_orders_query
+    
+get_orders_query: &amp;get_orders_query
   select:
   - field: client_id
   - operator: sum
@@ -111,9 +112,7 @@ li {
         value: sales
   from: orders
   group_by:
-  - field: client_id
-  
-main:
+  - field: client_idmain:
   select:
   - clients.*
   - o.total_sales

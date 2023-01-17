@@ -30,7 +30,6 @@ class YamlView
     @origin = ct[:declare].clone
     @ct = ct
     nested_hash_value(@ct, :apply)
-    puts "CT: #{@ct}"
   end
 
   def nested_hash_value(obj, key)
