@@ -32,6 +32,7 @@ class YamlView
   def nested_hash_value(obj, key)
     if obj.respond_to?(:key?) && obj.key?(key)
       obj.merge!(apply(obj[key]))
+      obj.delete(key)
     elsif obj.respond_to?(:each)
       obj.each do |ob|
         nested_hash_value(ob, key)
