@@ -99,7 +99,7 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-WITH &quot;countries&quot; AS (SELECT * FROM (VALUES (&#39;us&#39;, &#39;test1&#39;), (&#39;fr&#39;, &#39;France&#39;)) AS codes (code, name)) SELECT DISTINCT ON ( data.code ) * FROM &quot;data&quot; LEFT JOIN &quot;countries&quot; ON countries.code = data.code
+SELECT DISTINCT ON ( data.code ) * FROM &quot;data&quot; LEFT JOIN (SELECT * FROM (VALUES (&#39;us&#39;, &#39;test1&#39;), (&#39;fr&#39;, &#39;France&#39;)) AS codes (code, name)) countries ON countries.code = data.code
 </code>
 </pre>
   </div>

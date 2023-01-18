@@ -658,6 +658,20 @@ class Query
     end
 
     withs = []
+    if table[:with]
+      table[:with].each do |j|
+        j1 = j.except(:alias)
+        #jq = j1[:from] || j1[:query]
+        tmp_query = Query.new.(j1)
+        alias_query = j[:alias] || jq
+        ori, al = with_alias(j[:alias], tmp_query, with_name: j[:alias], is_materialized: j[:materialized] || false)
+        if j[:recursive]
+          withs << tmp_query.with(:recursive, al)
+        else
+          withs << al
+        end
+      end
+    end
     if table[:join]
       table[:join].each do |j|
         jq = j[:from] || j[:query]
@@ -686,18 +700,19 @@ class Query
         if j[:lateral]
           j[:type] = "#{j[:type] || "left_outer"}_lateral"
         end
-        if !j[:cte]
-          query = query.join(tmp_query.as(alias_query), get_join_type(j[:type])).on(tmp_cond)
-        else
-          query = query.join(ori, get_join_type(j[:type])).on(tmp_cond)
-          if j[:cte]
-            if j[:recursive]
-              query = query.with(:recursive, al)
-            else
-              withs << al
-            end
-          end
-        end
+        query = query.join(tmp_query.as(alias_query), get_join_type(j[:type])).on(tmp_cond)
+        # if !j[:cte]
+        #   query = query.join(tmp_query.as(alias_query), get_join_type(j[:type])).on(tmp_cond)
+        # else
+        #   query = query.join(ori, get_join_type(j[:type])).on(tmp_cond)
+        #   if j[:cte]
+        #     if j[:recursive]
+        #       query = query.with(:recursive, al)
+        #     else
+        #       withs << al
+        #     end
+        #   end
+        # end
       end
     end
 

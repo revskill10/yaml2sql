@@ -24,10 +24,13 @@ module AppHelpers
     app_dir + "/templates/docs/#{view_name.to_sym}.md"
   end
 
-  def self.static_routes
-    res = %w(complex aggregation join generate_series simple values_select).map do |i|
-      "/play/#{i}"
+  def self.static_routes(base_path = __dir__ + "/queries")
+    res = Dir[base_path].each do |path|
+      "/play/#{File.basename(path)}"
     end
+    # res = %w(complex aggregation join generate_series simple values_select).map do |i|
+    #   "/play/#{i}"
+    # end
     res + ["/", "/docs"]
   end
 end
