@@ -11,9 +11,33 @@ class PgQueryRunner < QueryRunner
   pg_connection
 end
 
+module AppHelpers
+  def app_dir
+    __dir__
+  end
+
+  def get_query(view_name)
+    app_dir + "/queries/#{view_name.to_sym}.yml"
+  end
+
+  def get_docs_template(view_name)
+    app_dir + "/templates/docs/#{view_name.to_sym}.md"
+  end
+
+  def self.static_routes
+    res = %w(complex aggregation join generate_series simple values_select).map do |i|
+      "/play/#{i}"
+    end
+    res + ["/", "/docs"]
+  end
+end
+
 class App < Sinatra::Base
+  include AppHelpers
   register Mustache::Sinatra
+
   require_relative "views/layout"
+
   set :public_folder, __dir__ + "/static"
 
   set :mustache, {
@@ -33,14 +57,14 @@ class App < Sinatra::Base
   end
   get "/docs" do
     view_name = params[:view] || "hello"
-    f = File.read(__dir__ + "/../templates/docs/#{view_name.to_sym}.md")
+    f = File.read(get_docs_template(view_name))
     @docs = RDiscount.new(f).to_html
     mustache :docs
   end
 
   get ["/", "/play/:view?"] do
     view_name = params[:view] || "simple"
-    @y = File.read(__dir__ + "/queries/#{view_name.to_sym}.yml")
+    @y = File.read(get_query(view_name))
 
     c = @y.gsub(/on:/, "where:")
 
