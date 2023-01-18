@@ -9,10 +9,12 @@ end
 
 Parklife.application.routes do
   root
-
-  %w(complex aggregation join generate_series simple values_select).each do |name|
-    get "/play/#{name}"
+  App.static_routes.each do |r|
+    get r
   end
+  # %w(complex aggregation join generate_series simple values_select).each do |name|
+  #   get "/play/#{name}"
+  # end
   get "/"
   get "/docs"
 end

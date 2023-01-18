@@ -11,6 +11,15 @@ class PgQueryRunner < QueryRunner
   pg_connection
 end
 
+module ClassHelpers
+  def static_routes
+    res = %w(complex aggregation join generate_series simple values_select cte).map do |i|
+      "/play/#{i}"
+    end
+    res + ["/", "/docs"]
+  end
+end
+
 module AppHelpers
   def app_dir
     __dir__
@@ -23,20 +32,12 @@ module AppHelpers
   def get_docs_template(view_name)
     app_dir + "/templates/docs/#{view_name.to_sym}.md"
   end
-
-  def self.static_routes(base_path = __dir__ + "/queries")
-    res = Dir[base_path].each do |path|
-      "/play/#{File.basename(path)}"
-    end
-    # res = %w(complex aggregation join generate_series simple values_select).map do |i|
-    #   "/play/#{i}"
-    # end
-    res + ["/", "/docs"]
-  end
 end
 
 class App < Sinatra::Base
   include AppHelpers
+  extend ClassHelpers
+
   register Mustache::Sinatra
 
   require_relative "views/layout"
