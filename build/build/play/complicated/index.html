@@ -82,23 +82,13 @@ declare:
     operator: =
     left: $1
     right: $2
-  get_country_name_eng:
-    field: country.country_name_eng
-  get_city:
+  get_field:
+    field: $1
+  get_table:
     type: left_join
-    from: city
+    from: $1
     on:
-      apply: [&quot;eql&quot;, &quot;city.country_id&quot;, &quot;country.id&quot;]
-  get_customer:
-    type: left_join
-    from: customer
-    on:
-      apply: [&quot;eql&quot;, &quot;city.id&quot;, &quot;customer.city_id&quot;]
-  get_call:
-    type: left_join
-    from: call
-    on:
-      apply: [&quot;eql&quot;, &quot;customer.id&quot;, &quot;call.customer_id&quot;]
+      apply: [&quot;eql&quot;, $2, $3]
   order_by:
     field: $1
     by: $2
@@ -108,12 +98,12 @@ declare:
     right: (SELECT AVG(DATEDIFF(SECOND, $1, $2)) FROM call)
 main:
   select:
-  - apply: [&quot;get_country_name_eng&quot;]
+  - apply: [&quot;get_field&quot;, &quot;country.country_name_eng&quot;]
   from: country
   join:
-  - apply: [&quot;get_city&quot;]
-  - apply: [&quot;get_customer&quot;]
-  - apply: [&quot;get_call&quot;]
+  - apply: [&quot;get_table&quot;, &quot;city&quot;, &quot;city.country_id&quot;, &quot;country.id&quot;]
+  - apply: [&quot;get_table&quot;, &quot;customer&quot;, &quot;city.id&quot;, &quot;customer.city_id&quot;]
+  - apply: [&quot;get_table&quot;, &quot;call&quot;, &quot;customer.id&quot;, &quot;call.customer_id&quot;]
   group:
   - country.id
   - country.country_name_eng
@@ -129,7 +119,7 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-  SELECT country.country_name_eng FROM "country" LEFT JOIN "city" ON city.country_id = country.id LEFT JOIN "customer" ON city.id = customer.city_id LEFT JOIN "call" ON customer.id = call.customer_id GROUP BY country.id, country.country_name_eng HAVING AVG(ISNULL(DATEDIFF(SECOND, call.start_time, call.end_time),0)) > (SELECT AVG(DATEDIFF(SECOND, call.start_time, call.end_time)) FROM call) ORDER BY calls desc,country_id asc
+  SELECT country.country_name_eng FROM "country" LEFT JOIN "city" ON country.id = country.id LEFT JOIN "customer" ON customer.city_id = customer.city_id LEFT JOIN "call" ON call.customer_id = call.customer_id GROUP BY country.id, country.country_name_eng HAVING AVG(ISNULL(DATEDIFF(SECOND, call.start_time, call.end_time),0)) > (SELECT AVG(DATEDIFF(SECOND, call.start_time, call.end_time)) FROM call) ORDER BY calls desc,country_id asc
 </code>
 </pre>
   </div>
