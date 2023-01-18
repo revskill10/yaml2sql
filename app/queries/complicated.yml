@@ -26,8 +26,8 @@ declare:
     by: $2
   having_cond:
     operator: ">"
-    left: AVG(ISNULL(DATEDIFF(SECOND, call.start_time, call.end_time),0))
-    right: (SELECT AVG(DATEDIFF(SECOND, call.start_time, call.end_time)) FROM call)
+    left: AVG(ISNULL(DATEDIFF(SECOND, $1, $2),0))
+    right: (SELECT AVG(DATEDIFF(SECOND, $1, $2)) FROM call)
 main:
   select:
   - apply: ["get_country_name_eng"]
@@ -43,4 +43,4 @@ main:
   - apply: ["order_by", "calls", "desc"]
   - apply: ["order_by", "country_id", "asc"]
   having:
-  - apply: ["having_cond"]
+  - apply: ["having_cond", "call.start_time", "call.end_time"]

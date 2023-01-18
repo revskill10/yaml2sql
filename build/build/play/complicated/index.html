@@ -104,8 +104,8 @@ declare:
     by: $2
   having_cond:
     operator: &quot;&gt;&quot;
-    left: AVG(ISNULL(DATEDIFF(SECOND, call.start_time, call.end_time),0))
-    right: (SELECT AVG(DATEDIFF(SECOND, call.start_time, call.end_time)) FROM call)
+    left: AVG(ISNULL(DATEDIFF(SECOND, $1, $2),0))
+    right: (SELECT AVG(DATEDIFF(SECOND, $1, $2)) FROM call)
 main:
   select:
   - apply: [&quot;get_country_name_eng&quot;]
@@ -121,7 +121,7 @@ main:
   - apply: [&quot;order_by&quot;, &quot;calls&quot;, &quot;desc&quot;]
   - apply: [&quot;order_by&quot;, &quot;country_id&quot;, &quot;asc&quot;]
   having:
-  - apply: [&quot;having_cond&quot;]
+  - apply: [&quot;having_cond&quot;, &quot;call.start_time&quot;, &quot;call.end_time&quot;]
     </code>
 </pre>
   </div>
