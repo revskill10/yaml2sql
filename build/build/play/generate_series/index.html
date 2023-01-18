@@ -55,6 +55,9 @@ li {
     <a href="/play/complex">Complex</a>
   </li>
   <li>
+    <a href="/play/complicated">Complicated</a>
+  </li>
+  <li>
     <a href="/play/aggregation">Aggregation</a>
   </li>
   <li>
@@ -94,7 +97,7 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-SELECT DATE_TRUNC(&#39;hour&#39;, date_range) FROM GENERATE_SERIES(CAST(&#39;2015-02-03&#39; AS timestamp), CAST(&#39;2019-02-10&#39; AS timestamp), &#39;1 hour&#39;) AS date_range
+  SELECT DATE_TRUNC('hour', date_range) FROM GENERATE_SERIES(CAST('2015-02-03' AS timestamp), CAST('2019-02-10' AS timestamp), '1 hour') AS date_range
 </code>
 </pre>
   </div>
@@ -107,7 +110,9 @@ SELECT DATE_TRUNC(&#39;hour&#39;, date_range) FROM GENERATE_SERIES(CAST(&#39;201
 var code = document.querySelector('#sql_code');
 
 var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
+code.innerText = format(code.innerHTML
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<'));
 
     </script>
   </body>

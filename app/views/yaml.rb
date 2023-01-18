@@ -30,6 +30,8 @@ class YamlView
     @origin = ct[:declare].clone
     @ct = ct
     nested_hash_value(@ct, :apply)
+    puts @ct
+    @ct
   end
 
   def nested_hash_value(obj, key)
@@ -42,7 +44,6 @@ class YamlView
         nested_hash_value(ob, key)
       end
     elsif obj.respond_to?(:key?) && obj.is_a?(String)
-      puts "OBJ: #{obj}"
       new_obj = apply(obj, key)
       obj.merge!(new_obj)
     end

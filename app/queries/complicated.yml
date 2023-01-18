@@ -1,22 +1,36 @@
-# SELECT 
-#     country.country_name_eng,
-#     SUM(CASE WHEN call.id IS NOT NULL THEN 1 ELSE 0 END) AS calls,
-#     AVG(ISNULL(DATEDIFF(SECOND, call.start_time, call.end_time),0)) AS avg_difference
-# FROM country 
-# LEFT JOIN city ON city.country_id = country.id
-# LEFT JOIN customer ON city.id = customer.city_id
-# LEFT JOIN call ON call.customer_id = customer.id
-# GROUP BY 
-#     country.id,
-#     country.country_name_eng
-# HAVING AVG(ISNULL(DATEDIFF(SECOND, call.start_time, call.end_time),0)) > (SELECT AVG(DATEDIFF(SECOND, call.start_time, call.end_time)) FROM call)
-# ORDER BY calls DESC, country.id ASC;
-
+---
+declare:
+  eql:
+    operator: =
+    left: $1
+    right: $2
+  get_country_name_eng:
+    field: country.country_name_eng
+  get_city:
+    type: left_join
+    from: city
+    on:
+      apply: ["eql", "city.country_id", "country.id"]
+  get_customer:
+    type: left_join
+    from: customer
+    on:
+      apply: ["eql", "city.id", "customer.city_id"]
+  get_call:
+    type: left_join
+    from: call
+    on:
+      apply: ["eql", "customer.id", "call.customer_id"]
+  order_by:
+    field: $1
+    by: $2
+  having_cond:
+    operator: ">"
+    left: AVG(ISNULL(DATEDIFF(SECOND, call.start_time, call.end_time),0))
+    right: (SELECT AVG(DATEDIFF(SECOND, call.start_time, call.end_time)) FROM call)
 main:
   select:
   - apply: ["get_country_name_eng"]
-  - apply: ["get_calls"]
-  - apply: ["avg_difference"]
   from: country
   join:
   - apply: ["get_city"]
@@ -26,7 +40,7 @@ main:
   - country.id
   - country.country_name_eng
   order:
-  - apply: ["calls_desc"]
-  - apply: ["country_id_asc"]
+  - apply: ["order_by", "calls", "desc"]
+  - apply: ["order_by", "country_id", "asc"]
   having:
   - apply: ["having_cond"]

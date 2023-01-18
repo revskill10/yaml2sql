@@ -55,6 +55,9 @@ li {
     <a href="/play/complex">Complex</a>
   </li>
   <li>
+    <a href="/play/complicated">Complicated</a>
+  </li>
+  <li>
     <a href="/play/aggregation">Aggregation</a>
   </li>
   <li>
@@ -102,7 +105,7 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-SELECT DISTINCT ON ( data.code ) * FROM &quot;data&quot; LEFT JOIN (SELECT * FROM (VALUES (&#39;us&#39;, &#39;test1&#39;), (&#39;fr&#39;, &#39;France&#39;)) AS codes (code, name)) countries ON countries.code = data.code
+  SELECT DISTINCT ON ( data.code ) * FROM "data" LEFT JOIN (SELECT * FROM (VALUES ('us', 'test1'), ('fr', 'France')) AS codes (code, name)) countries ON countries.code = data.code
 </code>
 </pre>
   </div>
@@ -115,7 +118,9 @@ SELECT DISTINCT ON ( data.code ) * FROM &quot;data&quot; LEFT JOIN (SELECT * FRO
 var code = document.querySelector('#sql_code');
 
 var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
+code.innerText = format(code.innerHTML
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<'));
 
     </script>
   </body>

@@ -77,66 +77,51 @@ li {
     <pre contenteditable class="language-yaml" data-linenumber="0">
     <code>
     
-get_orders_query: &amp;get_orders_query
-  select:
-  - field: client_id
-  - operator: sum
-    args:
-    - field: total
-    filter:
-      where:
-      - field: type
-        operator: = 
-        value: &#39;sales&#39;
-    alias: total_sale
-  - operator: sum
-    args:
-    - field: total
-    filter:
-      where:
-      - field: type 
-        operator: = 
-        value: &#39;refunds&#39;
-    alias: total_refunds
-  - operator: avg
-    args:
-    - field: total
-    filter:
-      where:
-      - field: type 
-        operator: = 
-        value: sales
-    alias: avg_ticket
-  - operator: count
-    alias: total_orders
-    args:
-    - field: &quot;*&quot;
-    filter:
-      where:
-      - field: type 
-        operator: = 
-        value: sales
-  from: orders
-  group_by:
-  - field: client_id
+declare:
+  eql:
+    operator: =
+    left: $1
+    right: $2
+  get_country_name_eng:
+    field: country.country_name_eng
+  get_city:
+    type: left_join
+    from: city
+    on:
+      apply: [&quot;eql&quot;, &quot;city.country_id&quot;, &quot;country.id&quot;]
+  get_customer:
+    type: left_join
+    from: customer
+    on:
+      apply: [&quot;eql&quot;, &quot;city.id&quot;, &quot;customer.city_id&quot;]
+  get_call:
+    type: left_join
+    from: call
+    on:
+      apply: [&quot;eql&quot;, &quot;customer.id&quot;, &quot;call.customer_id&quot;]
+  order_by:
+    field: $1
+    by: $2
+  having_cond:
+    operator: &quot;&gt;&quot;
+    left: AVG(ISNULL(DATEDIFF(SECOND, call.start_time, call.end_time),0))
+    right: (SELECT AVG(DATEDIFF(SECOND, call.start_time, call.end_time)) FROM call)
 main:
   select:
-  - clients.*
-  - o.total_sales
-  - o.total_refunds
-  - o.avg_ticket
-  - o.num_of_sales
-  from: clients
+  - apply: [&quot;get_country_name_eng&quot;]
+  from: country
   join:
-  - query:
-      &lt;&lt;: *get_orders_query
-    alias: o
-    type: left_join
-    on:
-    - field: o.client_id
-      operator: =
-      value: clients.id
-
+  - apply: [&quot;get_city&quot;]
+  - apply: [&quot;get_customer&quot;]
+  - apply: [&quot;get_call&quot;]
+  group:
+  - country.id
+  - country.country_name_eng
+  order:
+  - apply: [&quot;order_by&quot;, &quot;calls&quot;, &quot;desc&quot;]
+  - apply: [&quot;order_by&quot;, &quot;country_id&quot;, &quot;asc&quot;]
+  having:
+  - apply: [&quot;having_cond&quot;]
     </code>
 </pre>
   </div>
@@ -144,7 +129,7 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-  SELECT clients.*, o.total_sales, o.total_refunds, o.avg_ticket, o.num_of_sales FROM "clients" LEFT JOIN (SELECT client_id, SUM(total) FILTER(WHERE type = sales) AS total_sale, SUM(total) FILTER(WHERE type = refunds) AS total_refunds, AVG(total) FILTER(WHERE type = sales) AS avg_ticket, COUNT(*) FILTER(WHERE type = sales) AS total_orders FROM "orders" GROUP BY client_id) o ON o.client_id = clients.id
+  SELECT country.country_name_eng FROM "country" LEFT JOIN "city" ON city.country_id = country.id LEFT JOIN "customer" ON city.id = customer.city_id LEFT JOIN "call" ON customer.id = call.customer_id GROUP BY country.id, country.country_name_eng HAVING AVG(ISNULL(DATEDIFF(SECOND, call.start_time, call.end_time),0)) > (SELECT AVG(DATEDIFF(SECOND, call.start_time, call.end_time)) FROM call) ORDER BY calls desc,country_id asc
 </code>
 </pre>
   </div>

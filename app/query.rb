@@ -610,10 +610,12 @@ class Query
     order_by = table[:order] || table[:order_by]
     if order_by.is_a?(Array) # && table[:order][:fields]
       orders = order_by.map do |o|
+        o.delete(:apply) if o[:apply]
         t = o[:by]
-        field = o || o[:field]
+        field = o[:field]
         next "#{field} #{t}" if field and t
         next "#{field}" if field
+        next o if o.is_a?(String)
       end.join(",")
       query = query.order(Arel.sql(sanitize(orders)))
     end

@@ -55,6 +55,9 @@ li {
     <a href="/play/complex">Complex</a>
   </li>
   <li>
+    <a href="/play/complicated">Complicated</a>
+  </li>
+  <li>
     <a href="/play/aggregation">Aggregation</a>
   </li>
   <li>
@@ -97,7 +100,7 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-SELECT e.emp_id, e.inc_date, t.TotalInc, t.MaxIncAmount FROM &quot;salary_increase&quot; &quot;ix&quot; JOIN &quot;emp_table&quot; &quot;e&quot; ON i.emp_id = e.emp_id
+  SELECT e.emp_id, e.inc_date, t.TotalInc, t.MaxIncAmount FROM "salary_increase" "ix" JOIN "emp_table" "e" ON i.emp_id = e.emp_id
 </code>
 </pre>
   </div>
@@ -110,7 +113,9 @@ SELECT e.emp_id, e.inc_date, t.TotalInc, t.MaxIncAmount FROM &quot;salary_increa
 var code = document.querySelector('#sql_code');
 
 var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
+code.innerText = format(code.innerHTML
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<'));
 
     </script>
   </body>

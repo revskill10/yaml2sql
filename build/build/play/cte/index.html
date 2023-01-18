@@ -55,6 +55,9 @@ li {
     <a href="/play/complex">Complex</a>
   </li>
   <li>
+    <a href="/play/complicated">Complicated</a>
+  </li>
+  <li>
     <a href="/play/aggregation">Aggregation</a>
   </li>
   <li>
@@ -98,7 +101,7 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-WITH &quot;cte_film&quot; AS (SELECT film_id, title FROM &quot;film&quot;) SELECT film_id, title, length FROM &quot;cte_film&quot; WHERE length = Long
+  WITH "cte_film" AS (SELECT film_id, title FROM "film") SELECT film_id, title, length FROM "cte_film" WHERE length = Long
 </code>
 </pre>
   </div>
@@ -111,7 +114,9 @@ WITH &quot;cte_film&quot; AS (SELECT film_id, title FROM &quot;film&quot;) SELEC
 var code = document.querySelector('#sql_code');
 
 var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
+code.innerText = format(code.innerHTML
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<'));
 
     </script>
   </body>

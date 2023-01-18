@@ -55,6 +55,9 @@ li {
     <a href="/play/complex">Complex</a>
   </li>
   <li>
+    <a href="/play/complicated">Complicated</a>
+  </li>
+  <li>
     <a href="/play/aggregation">Aggregation</a>
   </li>
   <li>
@@ -99,7 +102,7 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-SELECT department_name, MIN(salary) AS min_salary FROM &quot;employees&quot; INNER JOIN &quot;departments&quot; ON department_name = test GROUP BY department_name
+  SELECT department_name, MIN(salary) AS min_salary FROM "employees" INNER JOIN "departments" ON department_name = test GROUP BY department_name
 </code>
 </pre>
   </div>
@@ -112,7 +115,9 @@ SELECT department_name, MIN(salary) AS min_salary FROM &quot;employees&quot; INN
 var code = document.querySelector('#sql_code');
 
 var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML);
+code.innerText = format(code.innerHTML
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<'));
 
     </script>
   </body>
