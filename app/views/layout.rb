@@ -11,6 +11,10 @@ class App
         Pygments.css
       end
 
+      def apply(fname, *args)
+        
+      end
+
       def links
         [
           { href: "/docs", title: "Docs" },

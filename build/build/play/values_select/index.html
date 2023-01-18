@@ -49,6 +49,9 @@ li {
     <a href="/play/values_select">Values select</a>
   </li>
   <li>
+    <a href="/play/values_join">Values join</a>
+  </li>
+  <li>
     <a href="/play/cte">CTE</a>
   </li>
   <li>
@@ -78,20 +81,20 @@ li {
     <code>
     
 main:
+  with:
+  - alias: codes (code, name)
+    values:
+    - key: &#39;us&#39;
+      value: &#39;test1&#39;
+    - key: &#39;fr&#39;
+      value: &#39;France&#39;
+    
   from: data
   distinct_on:
   - data.code
   join:
-  - query:
-      from:        
-        values:
-        - key: &#39;us&#39;
-          value: &#39;test1&#39;
-        - key: &#39;fr&#39;
-          value: &#39;France&#39;
-      alias: codes (code, name)
+  - from: codes
     alias: countries
-    cte: countries (code, name)
     type: left_join
     on:
     - left: countries.code
@@ -105,7 +108,7 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-  SELECT DISTINCT ON ( data.code ) * FROM "data" LEFT JOIN (SELECT * FROM (VALUES ('us', 'test1'), ('fr', 'France')) AS codes (code, name)) countries ON countries.code = data.code
+  WITH "codes (code, name)" AS (VALUES ('us', 'test1'), ('fr', 'France')) SELECT DISTINCT ON ( data.code ) * FROM "data" LEFT JOIN "codes" "countries" ON countries.code = data.code
 </code>
 </pre>
   </div>

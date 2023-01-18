@@ -1,19 +1,19 @@
 ---
 main:
+  with:
+  - alias: codes (code, name)
+    values:
+    - key: 'us'
+      value: 'test1'
+    - key: 'fr'
+      value: 'France'
+    
   from: data
   distinct_on:
   - data.code
   join:
-  - query:
-      from:        
-        values:
-        - key: 'us'
-          value: 'test1'
-        - key: 'fr'
-          value: 'France'
-      alias: codes (code, name)
+  - from: codes
     alias: countries
-    cte: countries (code, name)
     type: left_join
     on:
     - left: countries.code

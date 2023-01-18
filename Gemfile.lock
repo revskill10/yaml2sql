@@ -74,6 +74,7 @@ GEM
     pg (1.4.5)
     pg_query (2.2.0)
       google-protobuf (>= 3.19.2)
+    polyglot (0.3.5)
     public_suffix (5.0.1)
     puma (6.0.2)
       nio4r (~> 2.0)
@@ -101,6 +102,8 @@ GEM
     sqlite3 (1.6.0-arm64-darwin)
     thor (1.2.1)
     tilt (2.0.11)
+    treetop (1.6.12)
+      polyglot (~> 0.3)
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
     xpath (3.2.0)
@@ -127,6 +130,7 @@ DEPENDENCIES
   shotgun
   sinatra
   sqlite3
+  treetop
 
 BUNDLED WITH
    2.4.1

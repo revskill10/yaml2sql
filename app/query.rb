@@ -107,15 +107,15 @@ module ValueParser
     field = d[:field]
     if field and !is_operator
       tt = Arel.sql(sanitize(field.to_s))
-      if d[:as]
-        tt = cast(tt, sanitize(d[:as]))
+      if d[:as] || d[:alias]
+        tt = as(tt, Arel.sql(sanitize(d[:as] || d[:alias])))
       end
       return tt
     end
     if d[:value] and !is_operator
       tt = sanitize(d[:value].to_s)
-      if d[:as]
-        tt = Arel.sql("'#{tt}'::#{sanitize(d[:as])}")
+      if d[:as] || d[:alias]
+        tt = Arel.sql("'#{tt}'::#{sanitize(d[:as] || d[:alias])}")
       else
         tt = quoted(tt)
       end
@@ -515,6 +515,16 @@ class Query
   def call(table, to_sql = false)
     if table[:from].is_a?(Symbol)
       arel = create_arel(table[:from], table[:alias])
+    end
+
+    if !arel and table[:values].is_a?(Array)
+      values = table[:values].map do |kk|
+        [kk[:key], kk[:value]]
+      end
+      values_from = grouping(
+        values_list(values),
+      )
+      return Arel.sql("#{values_from.to_sql}") #.as(table[:alias])
     end
 
     if table[:from].is_a?(Hash) and table[:from][:operator]

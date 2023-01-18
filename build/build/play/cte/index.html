@@ -49,6 +49,9 @@ li {
     <a href="/play/values_select">Values select</a>
   </li>
   <li>
+    <a href="/play/values_join">Values join</a>
+  </li>
+  <li>
     <a href="/play/cte">CTE</a>
   </li>
   <li>
@@ -77,14 +80,27 @@ li {
     <pre contenteditable class="language-yaml" data-linenumber="0">
     <code>
     
+declare:
+  get_values:
+    values:
+    - key: 1
+      value: 4
+    - key: 2
+      value: 5
+    - key: 3
+      value: 6
 main:
   with:
   - alias: cte_film
     from: film
-    select:
-    - film_id
-    - title
+    select: [&quot;film_id&quot;, &quot;title&quot;]
+  - alias: cte1(temp_var1, temp_var2)
+    apply: [&quot;get_values&quot;]
   select:
+  - field: cte1.temp_var1
+  - field: cte1.temp_var2
+  - field: cte1.temp_var1 + cte1.temp_var2
+    as: temp_var3
   - film_id
   - title
   - length
@@ -92,7 +108,7 @@ main:
   where:
   - operator: =
     left: length      
-    value: &#39;Long&#39;
+    right: { value: &#39;Long&#39; }
 
     </code>
 </pre>
@@ -101,7 +117,7 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-  WITH "cte_film" AS (SELECT film_id, title FROM "film") SELECT film_id, title, length FROM "cte_film" WHERE length = Long
+  WITH "cte_film" AS (SELECT film_id, title FROM "film"), "cte1(temp_var1, temp_var2)" AS (VALUES (1, 4), (2, 5), (3, 6)) SELECT cte1.temp_var1, cte1.temp_var2, cte1.temp_var1 + cte1.temp_var2 AS temp_var3, film_id, title, length FROM "cte_film" WHERE length = 'Long'
 </code>
 </pre>
   </div>

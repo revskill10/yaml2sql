@@ -153,7 +153,9 @@ end
 def grouping(a)
   Arel::Nodes::Grouping.new(a)
 end
-
+class Arel::Nodes::Grouping
+  public :as
+end
 def substring(field, value)
   named_function("SUBSTRING", field, value)
 end
@@ -207,7 +209,7 @@ def quoted(val)
 end
 
 def cast(pred, type)
-  Arel::Nodes::NamedFunction.new "cast", [quoted(pred).as(type)]
+  Arel::Nodes::NamedFunction.new "cast", [as(quoted(pred), Arel.sql(type))]
 end
 
 def true?(obj)

@@ -1,12 +1,25 @@
 ---
+declare:
+  get_values:
+    values:
+    - key: 1
+      value: 4
+    - key: 2
+      value: 5
+    - key: 3
+      value: 6
 main:
   with:
   - alias: cte_film
     from: film
-    select:
-    - film_id
-    - title
+    select: ["film_id", "title"]
+  - alias: cte1(temp_var1, temp_var2)
+    apply: ["get_values"]
   select:
+  - field: cte1.temp_var1
+  - field: cte1.temp_var2
+  - field: cte1.temp_var1 + cte1.temp_var2
+    as: temp_var3
   - film_id
   - title
   - length
@@ -14,4 +27,4 @@ main:
   where:
   - operator: =
     left: length      
-    value: 'Long'
+    right: { value: 'Long' }
