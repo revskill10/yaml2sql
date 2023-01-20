@@ -46,6 +46,9 @@ li {
     <a href="/">Simple</a>
   </li>
   <li>
+    <a href="/">Lateral join</a>
+  </li>
+  <li>
     <a href="/play/values_select">Values select</a>
   </li>
   <li>
@@ -128,7 +131,9 @@ var code = document.querySelector('#sql_code');
 var format = window.sqlFormatter.format;
 code.innerText = format(code.innerHTML
     .replace(/&gt;/g, '>')
-    .replace(/&lt;/g, '<'));
+    .replace(/&lt;/g, '<')    
+    )
+    //.replace(/ :: text//g, '::text');
 
     </script>
   </body>

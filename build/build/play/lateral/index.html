@@ -83,35 +83,60 @@ li {
     <pre contenteditable class="language-yaml" data-linenumber="0">
     <code>
     
-declare:
-  get_values:
-    values:
-    - key: 1
-      value: 4
-    - key: 2
-      value: 5
-    - key: 3
-      value: 6
-main:
-  with:
-  - alias: cte_film
-    from: film
-    select: [&quot;film_id&quot;, &quot;title&quot;]
-  - alias: cte1(temp_var1, temp_var2)
-    apply: [&quot;get_values&quot;]
+lateral_tags: &amp;lateral_tags
   select:
-  - field: cte1.temp_var1
-  - field: cte1.temp_var2
-  - field: cte1.temp_var1 + cte1.temp_var2
-    as: temp_var3
-  - film_id
-  - title
-  - length
-  from: cte_film
+  - field: coalesce(jsonb_agg(result), &#39;[]&#39;)
+    as: result
+  from:
+    query:
+      select:
+      - field: coalesce(jsonb_agg(result), &#39;[]&#39;)
+        as: result
+      from: tags
+      where:
+      - operator: =
+        left: bookId
+        right: books.idlateral_authors: &amp;lateral_authors    
+  select:
+  - field: to_jsonb (&quot;authors&quot;.*)
+    as: result
+  from: authors
   where:
   - operator: =
-    left: length      
-    right: { value: &#39;Long&#39; }
+    left: id
+    right: books.authorId
+  limit: 3
+books: &amp;books  
+  select:
+  - field: |
+      to_jsonb (&quot;books&quot;.*) 
+      || 
+      jsonb_build_object(
+        $1::text, 
+        &quot;lateral_author&quot;.result, 
+        $2::text, 
+      &quot;lateral_tags&quot;.result)
+    as: result
+  from: books  
+  join:
+  - query:
+      &lt;&lt;: *lateral_authors
+    alias: lateral_author
+    type: left_join_lateral
+    on: true
+  - query:
+      &lt;&lt;: *lateral_tags
+    alias: sql_tags
+    type: left_join_lateral
+    on: true
+main:
+  select:
+  - field: coalesce(jsonb_agg(result), &#39;[]&#39;)
+    as: result
+  from:
+    alias: sq_books
+    query:
+      &lt;&lt;: *books
 
     </code>
 </pre>
@@ -120,7 +145,14 @@ main:
     <h2>SQL</h2>
     <pre>
 <code class="language-sql line-numbers" id="sql_code">
-  WITH "cte_film" AS (SELECT film_id, title FROM "film"), "cte1(temp_var1, temp_var2)" AS (VALUES (1, 4), (2, 5), (3, 6)) SELECT cte1.temp_var1, cte1.temp_var2, cte1.temp_var1 + cte1.temp_var2 AS temp_var3, film_id, title, length FROM "cte_film" WHERE length = 'Long'
+  SELECT coalesce(jsonb_agg(result), '[]') AS result FROM (SELECT to_jsonb ("books".*) 
+|| 
+jsonb_build_object(
+  $1::text, 
+  "lateral_author".result, 
+  $2::text, 
+"lateral_tags".result)
+ AS result FROM "books" LEFT JOIN LATERAL (SELECT  to_jsonb ("authors".*) AS result FROM "authors" WHERE id = books.authorId LIMIT 3) lateral_author ON true LEFT JOIN LATERAL (SELECT coalesce(jsonb_agg(result), '[]') AS result FROM (SELECT coalesce(jsonb_agg(result), '[]') AS result FROM "tags" WHERE bookId = books.id) tags) sql_tags ON true) sq_books
 </code>
 </pre>
   </div>

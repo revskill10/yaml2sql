@@ -1,0 +1,57 @@
+---
+lateral_tags: &lateral_tags
+  select:
+  - field: coalesce(jsonb_agg(result), '[]')
+    as: result
+  from:
+    query:
+      select:
+      - field: coalesce(jsonb_agg(result), '[]')
+        as: result
+      from: tags
+      where:
+      - operator: =
+        left: bookId
+        right: books.id
+
+lateral_authors: &lateral_authors    
+  select:
+  - field: to_jsonb ("authors".*)
+    as: result
+  from: authors
+  where:
+  - operator: =
+    left: id
+    right: books.authorId
+  limit: 3
+books: &books  
+  select:
+  - field: |
+      to_jsonb ("books".*) 
+      || 
+      jsonb_build_object(
+        $1::text, 
+        "lateral_author".result, 
+        $2::text, 
+      "lateral_tags".result)
+    as: result
+  from: books  
+  join:
+  - query:
+      <<: *lateral_authors
+    alias: lateral_author
+    type: left_join_lateral
+    on: true
+  - query:
+      <<: *lateral_tags
+    alias: sql_tags
+    type: left_join_lateral
+    on: true
+main:
+  select:
+  - field: coalesce(jsonb_agg(result), '[]')
+    as: result
+  from:
+    alias: sq_books
+    query:
+      <<: *books

@@ -13,7 +13,7 @@ end
 
 module ClassHelpers
   def static_routes
-    res = %w(complex aggregation join values_join generate_series simple values_select cte complicated).map do |i|
+    res = %w(complex lateral aggregation join values_join generate_series simple values_select cte complicated).map do |i|
       "/play/#{i}"
     end
     res + ["/", "/docs"]

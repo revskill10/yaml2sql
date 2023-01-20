@@ -750,14 +750,7 @@ class Query
 end
 
 def pg_connection
-  ActiveRecord::Base.establish_connection(
-    adapter: "postgresql",
-    host: "localhost",
-    database: "samuraierp_development",
-    username: "postgres",
-    password: "postgres",
-    port: 5432,
-  )
+  ActiveRecord::Base.establish_connection("postgres://lucky:password@localhost:6543/backend_development")
 end
 
 def sqlite_connection
@@ -806,6 +799,12 @@ def test
   #   t = values_list(values)
   #   a = as(lit("p(a, b, c)"), grouping(t))
   #   puts a.to_sql
+end
+
+def executeQuery
+  connection = ActiveRecord::Base.connection.raw_connection
+connection.prepare('some_name', "DELETE FROM my_table WHERE id = $1")
+st = connection.exec_prepared('some_name', [ id ])
 end
 
 class QueryRunner
