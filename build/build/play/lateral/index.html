@@ -96,7 +96,8 @@ lateral_tags: &amp;lateral_tags
       where:
       - operator: =
         left: bookId
-        right: books.idlateral_authors: &amp;lateral_authors    
+        right: books.id
+lateral_authors: &amp;lateral_authors    
   select:
   - field: to_jsonb (&quot;authors&quot;.*)
     as: result

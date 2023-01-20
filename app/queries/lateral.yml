@@ -13,7 +13,6 @@ lateral_tags: &lateral_tags
       - operator: =
         left: bookId
         right: books.id
-
 lateral_authors: &lateral_authors    
   select:
   - field: to_jsonb ("authors".*)
