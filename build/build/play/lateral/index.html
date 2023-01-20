@@ -88,15 +88,14 @@ lateral_tags: &amp;lateral_tags
   - field: coalesce(jsonb_agg(result), &#39;[]&#39;)
     as: result
   from:
-    query:
-      select:
-      - field: coalesce(jsonb_agg(result), &#39;[]&#39;)
-        as: result
-      from: tags
-      where:
-      - operator: =
-        left: bookId
-        right: books.id
+    select:
+    - field: coalesce(jsonb_agg(result), &#39;[]&#39;)
+      as: result
+    from: tags
+    where:
+    - operator: =
+      left: bookId
+      right: books.id
 lateral_authors: &amp;lateral_authors    
   select:
   - field: to_jsonb (&quot;authors&quot;.*)
@@ -153,7 +152,7 @@ jsonb_build_object(
   "lateral_author".result, 
   $2::text, 
 "lateral_tags".result)
- AS result FROM "books" LEFT JOIN LATERAL (SELECT  to_jsonb ("authors".*) AS result FROM "authors" WHERE id = books.authorId LIMIT 3) lateral_author ON true LEFT JOIN LATERAL (SELECT coalesce(jsonb_agg(result), '[]') AS result FROM (SELECT coalesce(jsonb_agg(result), '[]') AS result FROM "tags" WHERE bookId = books.id) tags) sql_tags ON true) sq_books
+ AS result FROM "books" LEFT JOIN LATERAL (SELECT  to_jsonb ("authors".*) AS result FROM "authors" WHERE id = books.authorId LIMIT 3) lateral_author ON true LEFT JOIN LATERAL (SELECT coalesce(jsonb_agg(result), '[]') AS result FROM "tags" WHERE bookId = books.id) sql_tags ON true) sq_books
 </code>
 </pre>
   </div>

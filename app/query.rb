@@ -516,6 +516,9 @@ class Query
     if table[:from].is_a?(Symbol)
       arel = create_arel(table[:from], table[:alias])
     end
+    if table[:from].is_a?(Hash) and table[:from][:select]
+      return call(table[:from])
+    end
 
     if !arel and table[:values].is_a?(Array)
       values = table[:values].map do |kk|

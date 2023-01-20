@@ -4,15 +4,14 @@ lateral_tags: &lateral_tags
   - field: coalesce(jsonb_agg(result), '[]')
     as: result
   from:
-    query:
-      select:
-      - field: coalesce(jsonb_agg(result), '[]')
-        as: result
-      from: tags
-      where:
-      - operator: =
-        left: bookId
-        right: books.id
+    select:
+    - field: coalesce(jsonb_agg(result), '[]')
+      as: result
+    from: tags
+    where:
+    - operator: =
+      left: bookId
+      right: books.id
 lateral_authors: &lateral_authors    
   select:
   - field: to_jsonb ("authors".*)
