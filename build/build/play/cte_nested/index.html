@@ -132,10 +132,10 @@ declare:
       - operator: =
         left: &quot;$2.$1_id&quot;
         right: &quot;$1.id&quot;
-      group:
-      - field: &quot;$1.id&quot;
-      order:
-      - field: &quot;$1.id&quot;
+    group:
+    - field: &quot;$1.id&quot;
+    order:
+    - field: &quot;$1.id&quot;
     </code>
 </pre>
   </div>
@@ -144,7 +144,7 @@ declare:
     <pre>
     <figure>
 <code id="sql_code">
-WITH "questions" AS (SELECT question.* FROM "question" "questions" GROUP BY question.id ORDER BY question.id), "sections" AS (SELECT section.*, json_agg(questions) AS questions FROM "section" "sections" LEFT JOIN "questions" ON questions.section_id = section.id), "forms" AS (SELECT form.*, json_agg(sections) AS sections FROM "form" "forms" LEFT JOIN "sections" ON sections.form_id = form.id) SELECT row_to_json(forms) FROM "forms"
+WITH "questions" AS (SELECT question.* FROM "question" "questions" GROUP BY question.id ORDER BY question.id), "sections" AS (SELECT section.*, json_agg(questions) AS questions FROM "section" "sections" LEFT JOIN "questions" ON questions.section_id = section.id GROUP BY section.id ORDER BY section.id), "forms" AS (SELECT form.*, json_agg(sections) AS sections FROM "form" "forms" LEFT JOIN "sections" ON sections.form_id = form.id GROUP BY form.id ORDER BY form.id) SELECT row_to_json(forms) FROM "forms"
 </code>
 </figure>
 </pre>

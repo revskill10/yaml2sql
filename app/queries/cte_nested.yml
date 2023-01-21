@@ -30,7 +30,7 @@ declare:
       - operator: =
         left: "$2.$1_id"
         right: "$1.id"
-      group:
-      - field: "$1.id"
-      order:
-      - field: "$1.id"
+    group:
+    - field: "$1.id"
+    order:
+    - field: "$1.id"
