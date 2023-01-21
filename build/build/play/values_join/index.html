@@ -58,6 +58,9 @@ li {
     <a href="/play/lateral">Lateral join</a>
   </li>
   <li>
+    <a href="/play/crosstab">Crosstab</a>
+  </li>
+  <li>
     <a href="/play/values_select">Values select</a>
   </li>
   <li>
@@ -109,7 +112,6 @@ main:
           value: &#39;France&#39;
       alias: codes (code, name)
     alias: countries
-    cte: countries (code, name)
     type: left_join
     on:
     - left: countries.code

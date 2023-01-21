@@ -58,6 +58,9 @@ li {
     <a href="/play/lateral">Lateral join</a>
   </li>
   <li>
+    <a href="/play/crosstab">Crosstab</a>
+  </li>
+  <li>
     <a href="/play/values_select">Values select</a>
   </li>
   <li>
@@ -111,6 +114,7 @@ declare:
 main:
   from: payments
   alias: p
+  distinct: true
   select:
   - apply: [&quot;sum&quot;, &quot;i.views&quot;]
   - apply: [&quot;sum&quot;, &quot;i.clicks&quot;]
@@ -129,7 +133,7 @@ main:
     <pre>
     <figure>
 <code id="sql_code">
-SELECT SUM(i.views), SUM(i.clicks), SUM(p.amount) FROM "payments" "p" WHERE user_id = 12 GROUP BY date
+SELECT DISTINCT SUM(i.views), SUM(i.clicks), SUM(p.amount) FROM "payments" "p" WHERE user_id = 12 GROUP BY date
 </code>
 </figure>
 </pre>
