@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      YAML -&gt; SQL
+    </title>
+    	<link href="https://unpkg.com/prismjs@v1.x/themes/prism.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="https://unpkg.com/sql-formatter@2.3.3/dist/sql-formatter.min.js"></script>
+<script src="https://unpkg.com/prismjs@v1.x/components/prism-core.min.js"></script>
+<script src="https://unpkg.com/prismjs@v1.x/components/prism-sql.min.js"></script>
+<script src="https://unpkg.com/prismjs@v1.x/components/prism-yaml.min.js"></script>
+	<script src="https://unpkg.com/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js"></script>
+
+<style>
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  display: inline;
+}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 45%;
+  padding: 10px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
+
+  </head>
+  <body>
+  <h1>YAML -&gt; SQL</h1>
+    <div id="main" class="container">
+      <ul>
+<li>
+    <a href="/">Simple</a>
+  </li>
+  <li>
+    <a href="/play/lateral">Lateral join</a>
+  </li>
+  <li>
+    <a href="/play/crosstab">Crosstab</a>
+  </li>
+  <li>
+    <a href="/play/values_select">Values select</a>
+  </li>
+  <li>
+    <a href="/play/values_join">Values join</a>
+  </li>
+  <li>
+    <a href="/play/cte">CTE</a>
+  </li>
+  <li>
+    <a href="/play/complex">Complex</a>
+  </li>
+  <li>
+    <a href="/play/complicated">Complicated</a>
+  </li>
+  <li>
+    <a href="/play/aggregation">Aggregation</a>
+  </li>
+  <li>
+    <a href="/play/join">Join</a>
+  </li>
+  <li>
+    <a href="/play/generate_series">Generate Series</a>
+  </li>
+  <li>
+    <a href="/docs">Docs</a>
+  </li>
+  <li>
+  <a target="_blank" href="https://stackoverflow.com/questions/60530599/how-to-express-sql-queries-in-yaml-format"><small>Why?.</small></a>
+  </li>
+</ul>
+
+<div class="row">
+  <div class="column">
+    <h2>YAML</h2>
+    <pre contenteditable>
+    <code id="yaml">
+main:
+  select:
+  - field: ct.*
+  from:
+    alias:
+    - name: problem_id
+      type: bigint
+    - name: info_1
+      type: varchar(255)
+    - name: info_2
+      type: varchar(255)
+    - name: info_3
+      type: varchar(255)
+    crosstab:
+    - select:
+      - extra_infos.problem_id
+      - extra_infos.info_type
+      - extra_infos.info_value
+      from: extra_infos
+    - select:
+      - extra_infos.info_type 
+      distinct: true
+      from: extra_infos
+
+    </code>
+</pre>
+  </div>
+  <div>
+    <h2>SQL</h2>
+    <pre>
+    <figure>
+<code id="sql_code">
+SELECT ct.* FROM crosstab('SELECT extra_infos.problem_id, extra_infos.info_type, extra_infos.info_value FROM "extra_infos"', 'SELECT DISTINCT extra_infos.info_type FROM "extra_infos"') AS ct("problem_id" bigint, "info_1" varchar(255), "info_2" varchar(255), "info_3" varchar(255))
+</code>
+</figure>
+</pre>
+  </div>
+</div>
+<script>
+window.Prism = window.Prism || {};
+window.Prism.manual = true;
+
+var code = document.querySelector('#sql_code');
+if (code) {
+var format = window.sqlFormatter.format;
+var tmp = format(code.innerHTML)
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<')    
+
+
+code.innerHTML = window.Prism.highlight(tmp, Prism.languages.sql, 'sql');
+}
+
+var code2 = document.querySelector('#yaml');
+if (code2) {
+code2.innerHTML = window.Prism.highlight(code2.innerHTML, Prism.languages.yaml, 'yaml');
+}
+
+</script>
+
+
+    </div>
+  </body>
+</html>
