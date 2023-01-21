@@ -15,6 +15,7 @@ declare:
 main:
   from: payments
   alias: p
+  distinct: true
   select:
   - apply: ["sum", "i.views"]
   - apply: ["sum", "i.clicks"]

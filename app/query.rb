@@ -534,6 +534,16 @@ class Query
       return Arel.sql("#{values_from.to_sql}") #.as(table[:alias])
     end
 
+    if table[:from].is_a?(Hash) and table[:from][:crosstab]
+      cts = table[:from][:crosstab]
+      q1 = Query.new.(cts[0])
+      q2 = Query.new.(cts[1])
+      ct = table[:from][:alias].map { |al| OpenStruct.new(al) }
+      cross_tab_query = crosstab(q1, q2, ct)
+       #= crt.to_sql if to_sql
+      #puts "SSS: #{sub_query_from.to_sql}"
+    end
+
     if table[:from].is_a?(Hash) and table[:from][:operator]
       operator_from = get_col(table[:from])
 
@@ -596,8 +606,12 @@ class Query
       end
       query = query.distinct_on(*colls)
     end
+    if table[:distinct]
+      query = query.distinct      
+    end
     query = query.from(sub_query_from) if sub_query_from
     query = query.from(arel) if !sub_query_from
+    query = query.from(cross_tab_query) if cross_tab_query
 
     if table[:where]
       cond = @predicator.(table[:where])

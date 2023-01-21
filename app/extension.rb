@@ -199,6 +199,19 @@ module ExternalHelpers
     return tmp.as(options.fetch(:as)) if options and options.fetch(:as)
     return tmp
   end
+  def ct(cols)
+    Arel::Nodes::NamedFunction.new('ct',[
+      cols.map {|col|  Arel::Nodes::TableAlias.new(Arel::Table.new(col.name), Arel.sql(col.type))}
+    ])
+  end
+  def crosstab(q1, q2, cols)
+    # build the crosstab(...) AS ct(...) statement
+    Arel::Nodes::As.new(
+      Arel::Nodes::NamedFunction.new('crosstab', [Arel.sql("'#{q1.to_sql}'"),
+        Arel.sql("'#{q2.to_sql}'")]),
+      ct(cols)
+    )
+  end
 end
 
 # series(5.days.ago, 4.days.ago, "'1 hour'", as: 'date_range')

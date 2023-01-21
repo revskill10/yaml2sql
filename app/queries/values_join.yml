@@ -13,7 +13,6 @@ main:
           value: 'France'
       alias: codes (code, name)
     alias: countries
-    cte: countries (code, name)
     type: left_join
     on:
     - left: countries.code

@@ -1,0 +1,23 @@
+main:
+  select:
+  - field: ct.*
+  from:
+    alias:
+    - name: problem_id
+      type: bigint
+    - name: info_1
+      type: varchar(255)
+    - name: info_2
+      type: varchar(255)
+    - name: info_3
+      type: varchar(255)
+    crosstab:
+    - select:
+      - extra_infos.problem_id
+      - extra_infos.info_type
+      - extra_infos.info_value
+      from: extra_infos
+    - select:
+      - extra_infos.info_type 
+      distinct: true
+      from: extra_infos
