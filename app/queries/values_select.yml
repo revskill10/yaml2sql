@@ -1,7 +1,10 @@
 ---
 main:
   with:
-  - alias: codes (code, name)
+  - alias: codes
+    fields:
+    - code
+    - name
     values:
     - key: 'us'
       value: 'test1'

@@ -2,7 +2,8 @@ main:
   select:
   - field: ct.*
   from:
-    alias:
+    alias: ct
+    fields:
     - name: problem_id
       type: bigint
     - name: info_1

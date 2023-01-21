@@ -11,7 +11,8 @@ main:
           value: 'test1'
         - key: 'fr'
           value: 'France'
-      alias: codes (code, name)
+      alias: codes
+      fields: ["code", "name"]
     alias: countries
     type: left_join
     on:

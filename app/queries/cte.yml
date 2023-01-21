@@ -1,20 +1,20 @@
 ---
-declare:
-  get_values:
-    values:
-    - key: 1
-      value: 4
-    - key: 2
-      value: 5
-    - key: 3
-      value: 6
 main:
   with:
   - alias: cte_film
     from: film
     select: ["film_id", "title"]
-  - alias: cte1(temp_var1, temp_var2)
-    apply: ["get_values"]
+  - from:
+      values:
+      - key: 1
+        value: 4
+      - key: 2
+        value: 5
+      - key: 3
+        value: 6
+    alias: cte1
+    fields: ["temp_var1", "temp_var2"]
+      
   select:
   - field: cte1.temp_var1
   - field: cte1.temp_var2

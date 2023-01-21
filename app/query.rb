@@ -538,8 +538,9 @@ class Query
       cts = table[:from][:crosstab]
       q1 = Query.new.(cts[0])
       q2 = Query.new.(cts[1])
-      ct = table[:from][:alias].map { |al| OpenStruct.new(al) }
-      cross_tab_query = crosstab(q1, q2, ct)
+      al = table[:from][:alias]
+      ct = table[:from][:fields]
+      cross_tab_query = crosstab(q1, q2, al, ct)
        #= crt.to_sql if to_sql
       #puts "SSS: #{sub_query_from.to_sql}"
     end
@@ -567,7 +568,7 @@ class Query
       end
       values_from = as(grouping(
         values_list(values),
-      ), Arel.sql(table[:alias]))
+      ), Arel.sql("#{ct(table[:alias], table[:fields]).to_sql}"))
       qu = Selector.new(table[:alias]).(table[:select])
       if qu.is_a?(Array)
         return Arel.sql("SELECT #{qu.map(&:to_sql).join(", ")} FROM #{values_from.to_sql}") #.as(table[:alias])
@@ -693,11 +694,16 @@ class Query
     withs = []
     if table[:with]
       table[:with].each do |j|
-        j1 = j.except(:alias)
+        #j1 = j.except(:alias)
         #jq = j1[:from] || j1[:query]
-        tmp_query = Query.new.(j1)
-        alias_query = j[:alias] || jq
-        ori, al = with_alias(j[:alias], tmp_query, with_name: j[:alias], is_materialized: j[:materialized] || false)
+        tmp_query = Query.new.(j)
+        alias_query = ct(j[:alias], j[:fields])
+        alias_query = alias_query.to_sql unless alias_query.is_a?(String)
+        #ori, al = with_alias(j[:alias], tmp_query, with_name: j[:alias], is_materialized: j[:materialized] || false)
+        #al = ct(j[:alias], j[:fields])
+        ori, al = with_alias(alias_query, tmp_query, with_name: alias_query, is_materialized: j[:materialized] || false)
+        puts "QQQ: #{tmp_query.to_sql}"
+        #puts "AL: #{al}"
         if j[:recursive]
           withs << tmp_query.with(:recursive, al)
         else

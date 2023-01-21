@@ -110,7 +110,8 @@ main:
           value: &#39;test1&#39;
         - key: &#39;fr&#39;
           value: &#39;France&#39;
-      alias: codes (code, name)
+      alias: codes
+      fields: [&quot;code&quot;, &quot;name&quot;]
     alias: countries
     type: left_join
     on:
@@ -125,7 +126,7 @@ main:
     <pre>
     <figure>
 <code id="sql_code">
-SELECT DISTINCT ON ( data.code ) * FROM "data" LEFT JOIN (SELECT * FROM (VALUES ('us', 'test1'), ('fr', 'France')) AS codes (code, name)) countries ON countries.code = data.code
+SELECT DISTINCT ON ( data.code ) * FROM "data" LEFT JOIN (SELECT * FROM (VALUES ('us', 'test1'), ('fr', 'France')) AS codes(code, name)) countries ON countries.code = data.code
 </code>
 </figure>
 </pre>

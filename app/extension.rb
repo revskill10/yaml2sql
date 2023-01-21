@@ -199,17 +199,23 @@ module ExternalHelpers
     return tmp.as(options.fetch(:as)) if options and options.fetch(:as)
     return tmp
   end
-  def ct(cols)
-    Arel::Nodes::NamedFunction.new('ct',[
-      cols.map {|col|  Arel::Nodes::TableAlias.new(Arel::Table.new(col.name), Arel.sql(col.type))}
+  def map_col(col)
+    return Arel.sql(col) if col.is_a?(String)
+    Arel::Nodes::TableAlias.new(Arel::Table.new(col[:name]), Arel.sql(col[:type]))
+  end
+  def ct(al, cols)
+    return al unless cols
+
+    Arel::Nodes::NamedFunction.new(al,[
+      cols.map {|col| map_col(col) }
     ])
   end
-  def crosstab(q1, q2, cols)
+  def crosstab(q1, q2, al, cols)
     # build the crosstab(...) AS ct(...) statement
     Arel::Nodes::As.new(
       Arel::Nodes::NamedFunction.new('crosstab', [Arel.sql("'#{q1.to_sql}'"),
         Arel.sql("'#{q2.to_sql}'")]),
-      ct(cols)
+      ct(al, cols)
     )
   end
 end
