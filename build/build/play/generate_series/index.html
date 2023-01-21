@@ -6,9 +6,13 @@
     <title>
       YAML -&gt; SQL
     </title>
+    	<link href="https://unpkg.com/prismjs@v1.x/themes/prism.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
         <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script src="https://unpkg.com/sql-formatter@2.3.3/dist/sql-formatter.min.js"></script>
+<script src="https://unpkg.com/prismjs@v1.x/components/prism-core.min.js"></script>
+<script src="https://unpkg.com/prismjs@v1.x/components/prism-sql.min.js"></script>
+	<script src="https://unpkg.com/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js"></script>
 
 <style>
 ul {
@@ -44,7 +48,7 @@ li {
   </head>
   <body>
   <h1>YAML -&gt; SQL</h1>
-    <div id="main">
+    <div id="main" class="container">
       <ul>
 <li>
     <a href="/">Simple</a>
@@ -86,7 +90,7 @@ li {
     <h2>YAML</h2>
     <pre contenteditable class="language-yaml" data-linenumber="0">
     <code>
-    
+
 main:
   select:
   - operator: date_trunc
@@ -106,9 +110,11 @@ main:
   <div  style="font-size: 18px;">
     <h2>SQL</h2>
     <pre>
+    <figure>
 <code class="language-sql line-numbers" id="sql_code">
-  SELECT DATE_TRUNC('hour', date_range) FROM GENERATE_SERIES(CAST('2015-02-03' AS timestamp), CAST('2019-02-10' AS timestamp), '1 hour') AS date_range
+SELECT DATE_TRUNC('hour', date_range) FROM GENERATE_SERIES(CAST('2015-02-03' AS timestamp), CAST('2019-02-10' AS timestamp), '1 hour') AS date_range
 </code>
+</figure>
 </pre>
   </div>
 </div>
@@ -117,13 +123,14 @@ main:
 
     </div>
     <script>
+    
 var code = document.querySelector('#sql_code');
 if (code) {
 var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML
+code.innerText = format(code.innerHTML)
     .replace(/&gt;/g, '>')
     .replace(/&lt;/g, '<')    
-    )
+    
 }
 
 
