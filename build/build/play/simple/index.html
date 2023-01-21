@@ -12,6 +12,7 @@
 <script src="https://unpkg.com/sql-formatter@2.3.3/dist/sql-formatter.min.js"></script>
 <script src="https://unpkg.com/prismjs@v1.x/components/prism-core.min.js"></script>
 <script src="https://unpkg.com/prismjs@v1.x/components/prism-sql.min.js"></script>
+<script src="https://unpkg.com/prismjs@v1.x/components/prism-yaml.min.js"></script>
 	<script src="https://unpkg.com/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js"></script>
 
 <style>
@@ -86,10 +87,10 @@ li {
 </ul>
 <a target="_blank" href="https://stackoverflow.com/questions/60530599/how-to-express-sql-queries-in-yaml-format"><small>Why?.</small></a>
 <div class="row">
-  <div class="column" style="font-size: 18px;">
+  <div class="column">
     <h2>YAML</h2>
-    <pre contenteditable class="language-yaml" data-linenumber="0">
-    <code>
+    <pre contenteditable>
+    <code id="yaml">
 
 declare:
   eql:
@@ -120,35 +121,40 @@ main:
     </code>
 </pre>
   </div>
-  <div  style="font-size: 18px;">
+  <div>
     <h2>SQL</h2>
     <pre>
     <figure>
-<code class="language-sql line-numbers" id="sql_code">
+<code id="sql_code">
 SELECT SUM(i.views), SUM(i.clicks), SUM(p.amount) FROM "payments" "p" WHERE user_id = 12 GROUP BY date
 </code>
 </figure>
 </pre>
   </div>
 </div>
+<script>
+window.Prism = window.Prism || {};
+window.Prism.manual = true;
 
-
-
-    </div>
-    <script>
-    
 var code = document.querySelector('#sql_code');
 if (code) {
 var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML)
+var tmp = format(code.innerHTML)
     .replace(/&gt;/g, '>')
     .replace(/&lt;/g, '<')    
-    
+
+
+code.innerHTML = window.Prism.highlight(tmp, Prism.languages.sql, 'sql');
 }
 
+var code2 = document.querySelector('#yaml');
+if (code2) {
+code2.innerHTML = window.Prism.highlight(code2.innerHTML, Prism.languages.yaml, 'yaml');
+}
 
-    //.replace(/ :: text//g, '::text');
+</script>
 
-    </script>
+
+    </div>
   </body>
 </html>

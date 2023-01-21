@@ -12,6 +12,7 @@
 <script src="https://unpkg.com/sql-formatter@2.3.3/dist/sql-formatter.min.js"></script>
 <script src="https://unpkg.com/prismjs@v1.x/components/prism-core.min.js"></script>
 <script src="https://unpkg.com/prismjs@v1.x/components/prism-sql.min.js"></script>
+<script src="https://unpkg.com/prismjs@v1.x/components/prism-yaml.min.js"></script>
 	<script src="https://unpkg.com/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js"></script>
 
 <style>
@@ -97,20 +98,5 @@ li {
 <p>You can Contact me @revskill on Twitter</p>
 
     </div>
-    <script>
-    
-var code = document.querySelector('#sql_code');
-if (code) {
-var format = window.sqlFormatter.format;
-code.innerText = format(code.innerHTML)
-    .replace(/&gt;/g, '>')
-    .replace(/&lt;/g, '<')    
-    
-}
-
-
-    //.replace(/ :: text//g, '::text');
-
-    </script>
   </body>
 </html>

@@ -49,10 +49,9 @@ main:
   - apply: ["select_many", "result"]
   from:
     alias: sq_books
-    query:
-      select:
-      - apply: ["select_all", "books", "authors", "tags"]
-      from: books  
-      join:
-      - apply: ["belongs_to", "authors", "id", "books.authorId"]
-      - apply: ["has_many", "tags", "bookId", "books.id"]
+    select:
+    - apply: ["select_all", "books", "authors", "tags"]
+    from: books  
+    join:
+    - apply: ["belongs_to", "authors", "id", "books.authorId"]
+    - apply: ["has_many", "tags", "bookId", "books.id"]

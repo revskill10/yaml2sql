@@ -1,23 +1,43 @@
 {{> partial}}
 <div class="row">
-  <div class="column" style="font-size: 18px;">
+  <div class="column">
     <h2>YAML</h2>
-    <pre contenteditable class="language-yaml" data-linenumber="0">
-    <code>
+    <pre contenteditable>
+    <code id="yaml">
 {{yaml_content}}
     </code>
 </pre>
   </div>
-  <div  style="font-size: 18px;">
+  <div>
     <h2>SQL</h2>
     <pre>
     <figure>
-<code class="language-sql line-numbers" id="sql_code">
+<code id="sql_code">
 {{{content}}}
 </code>
 </figure>
 </pre>
   </div>
 </div>
+<script>
+window.Prism = window.Prism || {};
+window.Prism.manual = true;
 
+var code = document.querySelector('#sql_code');
+if (code) {
+var format = window.sqlFormatter.format;
+var tmp = format(code.innerHTML)
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<')    
+
+
+code.innerHTML = window.Prism.highlight(tmp, Prism.languages.sql, 'sql');
+}
+
+var code2 = document.querySelector('#yaml');
+if (code2) {
+code2.innerHTML = window.Prism.highlight(code2.innerHTML, Prism.languages.yaml, 'yaml');
+}
+
+</script>
 

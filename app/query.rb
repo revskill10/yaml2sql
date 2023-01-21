@@ -517,7 +517,11 @@ class Query
       arel = create_arel(table[:from], table[:alias])
     end
     if table[:from].is_a?(Hash) and table[:from][:select]
-      return call(table[:from])
+      #sub_query_from = call(table[:from])
+      #return Query.new.(table[:from], to_sql)
+      table[:from][:query] = table[:from]
+      #al = table[:alias] || table[:from][:from]
+      #sub_query_from = sub_query_from.as(al) if al
     end
 
     if !arel and table[:values].is_a?(Array)
@@ -562,7 +566,7 @@ class Query
       end
     end
 
-    sub_query_from = nil
+    #sub_query_from = nil
     if !arel and sym.is_a?(Hash) and sym[:query]
       sym[:alias] = sym[:alias] || sym[:query][:from]
       j = sym[:query]
