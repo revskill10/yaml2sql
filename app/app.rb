@@ -59,6 +59,11 @@ class App < Sinatra::Base
     e = env["sinatra.error"]
     { :result => "error", :message => e.message }.to_json
   end
+
+  get "/form" do
+    mustache :form
+  end
+
   get "/docs" do
     view_name = params[:view] || "hello"
     f = File.read(get_docs_template(view_name))

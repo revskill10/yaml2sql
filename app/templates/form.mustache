@@ -1,0 +1,47 @@
+{{> partial}}
+
+<form x-data="ContactForm()" @submit.prevent="submitForm" class="grid">
+    <template x-if="isGreat">
+    <div>
+      <label>Name:</label>
+      <input type="text" name="name" required x-model="formData.name" />
+    </div>
+    </template>
+    <template x-if="isSmall">
+    <div>
+      <label>Email:</label>
+      <input type="email" name="email" required x-model="formData.email" />
+    </div>
+    </template>
+    <div>
+      <label>Age:</label>
+      <input type="number" name="age" required x-model="formData.age" />
+    </div>
+    <div>
+      <label>Message:</label>
+      <textarea name="message" required x-model="formData.message"></textarea>
+    </div>
+    <button>Submit</button>
+  </form>
+  <script>
+    function ContactForm() {
+      return {
+        formData: {
+          name: "",
+          email: "",
+          message: "",
+          age: 10
+        },
+        get isGreat() {
+            return this.formData.age > 30
+        },
+        get isSmall() {
+            return this.formData.age <= 30
+        },
+        formMessage: "",
+        submitForm() {
+          console.log(JSON.stringify(this.formData));
+        },        
+      };
+    }
+  </script>
