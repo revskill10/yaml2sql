@@ -131,7 +131,7 @@ main:
     <pre>
     <figure>
 <code id="sql_code">
-WITH "codes(code, name)" AS (SELECT * FROM (VALUES ('us', 'test1'), ('fr', 'France')) AS codes(code, name)) SELECT DISTINCT ON ( data.code ) * FROM "data" LEFT JOIN "codes" "countries" ON countries.code = data.code
+WITH "codes" AS (SELECT * FROM (VALUES ('us', 'test1'), ('fr', 'France')) AS codes(code, name)) SELECT DISTINCT ON ( data.code ) * FROM "data" LEFT JOIN "codes" "countries" ON countries.code = data.code
 </code>
 </figure>
 </pre>

@@ -506,7 +506,7 @@ class Query
   end
 
   def with_alias(al, q, with_name: al, is_materialized: false)
-    cte_table = Arel::Table.new(al)
+    cte_table = Arel::Table.new(with_name)
     cte_table.instance_variable_set(:@is_materialized, is_materialized)
     cte_table.instance_variable_set(:@cte_name, with_name)
     return cte_table, Arel::Nodes::As.new(cte_table, q)
@@ -701,8 +701,7 @@ class Query
         alias_query = alias_query.to_sql unless alias_query.is_a?(String)
         #ori, al = with_alias(j[:alias], tmp_query, with_name: j[:alias], is_materialized: j[:materialized] || false)
         #al = ct(j[:alias], j[:fields])
-        ori, al = with_alias(alias_query, tmp_query, with_name: alias_query, is_materialized: j[:materialized] || false)
-        puts "QQQ: #{tmp_query.to_sql}"
+        ori, al = with_alias(alias_query, tmp_query, with_name: j[:alias], is_materialized: j[:materialized] || false)
         #puts "AL: #{al}"
         if j[:recursive]
           withs << tmp_query.with(:recursive, al)

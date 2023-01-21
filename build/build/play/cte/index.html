@@ -136,7 +136,7 @@ main:
     <pre>
     <figure>
 <code id="sql_code">
-WITH "cte_film" AS (SELECT film_id, title FROM "film" "cte_film"), "cte1(temp_var1, temp_var2)" AS (SELECT * FROM (VALUES (1, 4), (2, 5), (3, 6)) AS cte1(temp_var1, temp_var2)) SELECT cte1.temp_var1, cte1.temp_var2, cte1.temp_var1 + cte1.temp_var2 AS temp_var3, film_id, title, length FROM "cte_film" WHERE length = 'Long'
+WITH "cte_film" AS (SELECT film_id, title FROM "film" "cte_film"), "cte1" AS (SELECT * FROM (VALUES (1, 4), (2, 5), (3, 6)) AS cte1(temp_var1, temp_var2)) SELECT cte1.temp_var1, cte1.temp_var2, cte1.temp_var1 + cte1.temp_var2 AS temp_var3, film_id, title, length FROM "cte_film" WHERE length = 'Long'
 </code>
 </figure>
 </pre>
