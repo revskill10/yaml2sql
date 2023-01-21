@@ -91,60 +91,63 @@ li {
     <pre contenteditable class="language-yaml" data-linenumber="0">
     <code>
 
-lateral_tags: &amp;lateral_tags
-  select:
-  - field: coalesce(jsonb_agg(result), &#39;[]&#39;)
+declare:
+  select_many:
+    field: coalesce(jsonb_agg($1), &#39;[]&#39;)
+    as: $1
+  select_json:
+    field: to_jsonb (&quot;$1&quot;.*)
     as: result
-  from: tags
-  where:
-  - operator: =
-    left: |
-      &quot;bookId&quot;
-    right: |
-      &quot;books&quot;.&quot;id&quot;
-lateral_authors: &amp;lateral_authors    
-  select:
-  - field: to_jsonb (&quot;authors&quot;.*)
-    as: result
-  from: &quot;authors&quot;
-  where:
-  - operator: =
-    left: |
-      &quot;id&quot;
-    right: |
-      &quot;books&quot;.&quot;authorId&quot;
-  limit: 3
-books: &amp;books  
-  select:
-  - field: |
-      to_jsonb (&quot;books&quot;.*) 
+  has_many:
+    query:
+      select:
+      - apply: [&quot;select_many&quot;, &quot;result&quot;]
+      from: $1
+      where:
+      - operator: =
+        left: $2        
+        right: $3       
+    alias: lateral_$1
+    type: left_join_lateral
+    on: true
+  belongs_to:
+    query:
+      select:
+      - field: to_jsonb (&quot;$1&quot;.*)
+        as: result
+      from: &quot;$1&quot;
+      where:
+      - operator: =
+        left: |
+          $2
+        right: |
+          $3
+      limit: 1
+    alias: lateral_$1
+    type: left_join_lateral
+    on: true
+  select_all:
+    field: |
+      to_jsonb (&quot;$1&quot;.*) 
       || 
       jsonb_build_object(
-        $1::text, 
-        &quot;lateral_author&quot;.result, 
         $2::text, 
-      &quot;lateral_tags&quot;.result)
+        &quot;lateral_$2&quot;.result, 
+        $3::text, 
+      &quot;lateral_$3&quot;.result)
     as: result
-  from: books  
-  join:
-  - query:
-      &lt;&lt;: *lateral_authors
-    alias: lateral_author
-    type: left_join_lateral
-    on: true
-  - query:
-      &lt;&lt;: *lateral_tags
-    alias: sql_tags
-    type: left_join_lateral
-    on: true
 main:
   select:
-  - field: coalesce(jsonb_agg(result), &#39;[]&#39;)
-    as: result
+  - apply: [&quot;select_many&quot;, &quot;result&quot;]
   from:
     alias: sq_books
     query:
-      &lt;&lt;: *books
+      select:
+      - apply: [&quot;select_all&quot;, &quot;books&quot;, &quot;authors&quot;, &quot;tags&quot;]
+      from: books  
+      join:
+      - apply: [&quot;belongs_to&quot;, &quot;authors&quot;, &quot;id&quot;, &quot;books.authorId&quot;]
+      - apply: [&quot;has_many&quot;, &quot;tags&quot;, &quot;bookId&quot;, &quot;books.id&quot;]
 
     </code>
 </pre>
@@ -157,15 +160,13 @@ main:
 SELECT coalesce(jsonb_agg(result), '[]') AS result FROM (SELECT to_jsonb ("books".*) 
 || 
 jsonb_build_object(
-  $1::text, 
-  "lateral_author".result, 
-  $2::text, 
+  authors::text, 
+  "lateral_authors".result, 
+  tags::text, 
 "lateral_tags".result)
- AS result FROM "books" LEFT JOIN LATERAL (SELECT  to_jsonb ("authors".*) AS result FROM "authors" WHERE "id"
- = "books"."authorId"
- LIMIT 3) lateral_author ON true LEFT JOIN LATERAL (SELECT coalesce(jsonb_agg(result), '[]') AS result FROM "tags" WHERE "bookId"
- = "books"."id"
-) sql_tags ON true) sq_books
+ AS result FROM "books" LEFT JOIN LATERAL (SELECT  to_jsonb ("authors".*) AS result FROM "authors" WHERE id
+ = books.authorId
+ LIMIT 1) lateral_authors ON true LEFT JOIN LATERAL (SELECT coalesce(jsonb_agg(result), '[]') AS result FROM "tags" WHERE bookId = books.id) lateral_tags ON true) sq_books
 </code>
 </figure>
 </pre>

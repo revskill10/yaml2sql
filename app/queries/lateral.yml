@@ -1,55 +1,58 @@
 ---
-lateral_tags: &lateral_tags
-  select:
-  - field: coalesce(jsonb_agg(result), '[]')
+declare:
+  select_many:
+    field: coalesce(jsonb_agg($1), '[]')
+    as: $1
+  select_json:
+    field: to_jsonb ("$1".*)
     as: result
-  from: tags
-  where:
-  - operator: =
-    left: |
-      "bookId"
-    right: |
-      "books"."id"
-lateral_authors: &lateral_authors    
-  select:
-  - field: to_jsonb ("authors".*)
-    as: result
-  from: "authors"
-  where:
-  - operator: =
-    left: |
-      "id"
-    right: |
-      "books"."authorId"
-  limit: 3
-books: &books  
-  select:
-  - field: |
-      to_jsonb ("books".*) 
+  has_many:
+    query:
+      select:
+      - apply: ["select_many", "result"]
+      from: $1
+      where:
+      - operator: =
+        left: $2        
+        right: $3       
+    alias: lateral_$1
+    type: left_join_lateral
+    on: true
+  belongs_to:
+    query:
+      select:
+      - field: to_jsonb ("$1".*)
+        as: result
+      from: "$1"
+      where:
+      - operator: =
+        left: |
+          $2
+        right: |
+          $3
+      limit: 1
+    alias: lateral_$1
+    type: left_join_lateral
+    on: true
+  select_all:
+    field: |
+      to_jsonb ("$1".*) 
       || 
       jsonb_build_object(
-        $1::text, 
-        "lateral_author".result, 
         $2::text, 
-      "lateral_tags".result)
+        "lateral_$2".result, 
+        $3::text, 
+      "lateral_$3".result)
     as: result
-  from: books  
-  join:
-  - query:
-      <<: *lateral_authors
-    alias: lateral_author
-    type: left_join_lateral
-    on: true
-  - query:
-      <<: *lateral_tags
-    alias: sql_tags
-    type: left_join_lateral
-    on: true
 main:
   select:
-  - field: coalesce(jsonb_agg(result), '[]')
-    as: result
+  - apply: ["select_many", "result"]
   from:
     alias: sq_books
     query:
-      <<: *books
+      select:
+      - apply: ["select_all", "books", "authors", "tags"]
+      from: books  
+      join:
+      - apply: ["belongs_to", "authors", "id", "books.authorId"]
+      - apply: ["has_many", "tags", "bookId", "books.id"]

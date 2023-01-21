@@ -6,7 +6,7 @@ require_relative "query"
 require "pygments"
 require "rdiscount"
 require_relative "views/yaml"
-
+require 'ruby2js/sinatra'
 class PgQueryRunner < QueryRunner
   pg_connection
 end
