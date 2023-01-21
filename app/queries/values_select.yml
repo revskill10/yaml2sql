@@ -5,11 +5,12 @@ main:
     fields:
     - code
     - name
-    values:
-    - key: 'us'
-      value: 'test1'
-    - key: 'fr'
-      value: 'France'
+    from:
+      values:
+      - key: 'us'
+        value: 'test1'
+      - key: 'fr'
+        value: 'France'
     
   from: data
   distinct_on:
