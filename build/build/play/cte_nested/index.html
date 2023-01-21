@@ -100,25 +100,42 @@ li {
     <h2>YAML</h2>
     <pre contenteditable>
     <code id="yaml">
-
 main:
+  with:
+  - apply: [&quot;cte_without_join&quot;, &quot;question&quot;]
+  - apply: [&quot;cte&quot;, &quot;section&quot;, &quot;questions&quot;]
+  - apply: [&quot;cte&quot;, &quot;form&quot;, &quot;sections&quot;]
   select:
-  - field: department_name
-  - operator: min
-    alias: min_salary
-    args:
-    - field: salary
-  from: employees
-  join:
-  - from: departments
-    type: inner_join
-    on:
-    - operator: =
-      left: department_name
-      right: &quot;test&quot;
-  group:
-  - department_name
-  
+  - field: row_to_json(forms)
+  from: forms
+declare:
+  cte_without_join:
+    alias: $1s
+    from: $1
+    select:
+    - field: $1.*
+    group:
+    - field: $1.id
+    order:
+    - field: $1.id
+  cte:
+    alias: &quot;$1s&quot;
+    select:
+    - field: &quot;$1.*&quot;
+    - field: json_agg($2)
+      as: &quot;$2&quot;
+    from: &quot;$1&quot;
+    join:
+    - from: &quot;$2&quot;
+      type: left_join
+      on:
+      - operator: =
+        left: &quot;$2.$1_id&quot;
+        right: &quot;$1.id&quot;
+      group:
+      - field: &quot;$1.id&quot;
+      order:
+      - field: &quot;$1.id&quot;
     </code>
 </pre>
   </div>
@@ -127,7 +144,7 @@ main:
     <pre>
     <figure>
 <code id="sql_code">
-SELECT department_name, MIN(salary) AS min_salary FROM "employees" INNER JOIN "departments" ON department_name = test GROUP BY department_name
+WITH "questions" AS (SELECT question.* FROM "question" "questions" GROUP BY question.id ORDER BY question.id), "sections" AS (SELECT section.*, json_agg(questions) AS questions FROM "section" "sections" LEFT JOIN "questions" ON questions.section_id = section.id), "forms" AS (SELECT form.*, json_agg(sections) AS sections FROM "form" "forms" LEFT JOIN "sections" ON sections.form_id = form.id) SELECT row_to_json(forms) FROM "forms"
 </code>
 </figure>
 </pre>

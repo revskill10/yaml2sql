@@ -1,0 +1,36 @@
+main:
+  with:
+  - apply: ["cte_without_join", "question"]
+  - apply: ["cte", "section", "questions"]
+  - apply: ["cte", "form", "sections"]
+  select:
+  - field: row_to_json(forms)
+  from: forms
+declare:
+  cte_without_join:
+    alias: $1s
+    from: $1
+    select:
+    - field: $1.*
+    group:
+    - field: $1.id
+    order:
+    - field: $1.id
+  cte:
+    alias: "$1s"
+    select:
+    - field: "$1.*"
+    - field: json_agg($2)
+      as: "$2"
+    from: "$1"
+    join:
+    - from: "$2"
+      type: left_join
+      on:
+      - operator: =
+        left: "$2.$1_id"
+        right: "$1.id"
+      group:
+      - field: "$1.id"
+      order:
+      - field: "$1.id"

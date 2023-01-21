@@ -513,6 +513,9 @@ class Query
   end
 
   def call(table, to_sql = false)
+    if table.is_a?(Symbol)
+      arel = create_arel(table, table[:alias])
+    end
     if table[:from].is_a?(Symbol)
       arel = create_arel(table[:from], table[:alias])
     end
